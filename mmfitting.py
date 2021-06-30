@@ -23,7 +23,7 @@ from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
 import qng
 
 
-def crossval_summarize_mm(scenario, X, y, flavor='lm',
+def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                           scoring=['neg_mean_absolute_error', 'neg_mean_absolute_percentage_error', 'r2'],
                           scale=False, fit_intercept=True, n_splits=5, kfold_shuffle=True, kfold_random_state=4,
                           return_train_score=True, return_estimator=True,
@@ -55,6 +55,9 @@ def crossval_summarize_mm(scenario, X, y, flavor='lm',
     -------
 
     """
+
+    plt.ioff()
+
     # Create name label lists
     partitions = ['test', 'train']
     metric_names = [f"{p}_{s}" for s in scoring for p in partitions]
@@ -90,6 +93,7 @@ def crossval_summarize_mm(scenario, X, y, flavor='lm',
         raise ValueError(f"Unknown flavor: {flavor}")
 
     model = make_pipeline(*steps)
+    model_final = make_pipeline(*steps)
 
     # Run the cross validation model fitting and testing
     if not kfold_shuffle:
@@ -99,6 +103,8 @@ def crossval_summarize_mm(scenario, X, y, flavor='lm',
     scores = cross_validate(model, X, y, scoring=scoring,
                             cv=cv_iterator,
                             return_train_score=return_train_score, return_estimator=return_estimator)
+
+    model_final.fit(X, y)
 
     # Extract coefficients for relevant flavors
     if flavor in flavors_w_coeffs:
@@ -115,7 +121,16 @@ def crossval_summarize_mm(scenario, X, y, flavor='lm',
         alphas = [estimator.named_steps['lassocv'].alpha_ for estimator in scores['estimator']]
 
     # Extract metrics
-    metrics = {metric: scores[metric] for metric in metric_names}
+    metrics_raw = {metric: scores[metric] for metric in metric_names}
+    metrics = dict()
+    for key, val in metrics_raw.items():
+        if 'neg_' in key:
+            new_key = key.replace('neg_', '')
+            metrics[new_key] = -1 * val
+        else:
+            new_key = key
+            metrics[new_key] = val
+
     metrics_df = pd.DataFrame(metrics)
 
     # Create predictions
@@ -168,8 +183,12 @@ def crossval_summarize_mm(scenario, X, y, flavor='lm',
             # Put them together with intercept as first column
             unscaled_coeffs_df = pd.concat([unscaled_coeffs_df2, unscaled_coeffs_df1], axis=1)
 
+
         results = {'scenario': scenario,
+                   'measure': measure,
                    'flavor': flavor,
+                   'unit': unit,
+                   'model': model_final,
                    'coeffs_df': unscaled_coeffs_df,
                    'metrics_df': metrics_df,
                    'scaling': scaling_factors,
@@ -180,7 +199,10 @@ def crossval_summarize_mm(scenario, X, y, flavor='lm',
                    'coefplot': fig_coeffs}
     else:
         results = {'scenario': scenario,
+                   'measure': measure,
                    'flavor': flavor,
+                   'unit': unit,
+                   'model': model_final,
                    'metrics_df': metrics_df,
                    'predictions': predictions,
                    'fitplot': fig_scatter}
@@ -188,7 +210,7 @@ def crossval_summarize_mm(scenario, X, y, flavor='lm',
     return results
 
 
-def fit_predict_mm(scenario, X_train, y_train, X_test, y_test, flavor='lm',
+def fit_predict_mm(scenario, unit, measure, X_train, y_train, X_test, y_test, flavor='lm',
                    scale=False, fit_intercept=True, n_splits=5,
                    lassocv_shuffle=True, lassocv_random_state=4,
                    lasso_alpha=1.0, lasso_max_iter=1000, nn_max_iter=3000,
@@ -287,7 +309,10 @@ def fit_predict_mm(scenario, X_train, y_train, X_test, y_test, flavor='lm',
         fig_coeffs = coeffs_by_fold(coeffs_df, col_wrap=5, sharey=False)
 
         results = {'scenario': scenario,
+                   'measure': measure,
                    'flavor': flavor,
+                   'model': model,
+                   'unit': unit,
                    'coeffs_df': coeffs_df,
                    'metrics_df': metrics_df,
                    'alpha': alpha,
@@ -296,7 +321,10 @@ def fit_predict_mm(scenario, X_train, y_train, X_test, y_test, flavor='lm',
                    'coefplot': fig_coeffs}
     else:
         results = {'scenario': scenario,
+                   'measure': measure,
                    'flavor': flavor,
+                   'unit': unit,
+                   'model': model,
                    'metrics_df': metrics_df,
                    'predictions_test': predictions_test,
                    'fitplot': fig_scatter}
@@ -342,10 +370,16 @@ def coeffs_by_fold(coeffs_df, col_wrap=5, sharey=False):
     coeffs = coeffs_df.melt(var_name='coeff', value_name='value', ignore_index=False)
     coeffs.reset_index(drop=False, inplace=True)
     coeffs.rename(columns={'index': 'fold'}, inplace=True)
+
+    plt.ioff() # Trying to get Seaborn to stop opening plot windows
     g = sns.FacetGrid(coeffs, col="coeff", col_wrap=col_wrap, sharey=sharey)
     g.map_dataframe(sns.barplot, x="fold", y="value")
     g.set_titles('{col_name}')
+    plt.close() # Trying to get Seaborn to stop opening plot windows
     return g
+
+
+
 
 if __name__ == '__main__':
     pass

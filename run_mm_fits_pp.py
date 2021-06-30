@@ -22,88 +22,88 @@ y_pp_occ_p95 = pd.read_csv(Path(data_path, 'y_pp_occ_p95.csv'), index_col=0, squ
 
 ## Linear regression (lm)
 pp_occ_mean_basicq_lm_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_lm', X_pp_basicq, y_pp_occ_mean, scale=False, flavor='lm')
+    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False, flavor='lm')
 
 pp_occ_mean_noq_lm_results = \
-    crossval_summarize_mm('pp_occ_mean_noq_lm', X_pp_noq, y_pp_occ_mean, scale=False, flavor='lm')
+    crossval_summarize_mm('pp_occ_mean_noq_lm', 'pp', 'occ_mean', X_pp_noq, y_pp_occ_mean, scale=False, flavor='lm')
 
 
 pp_occ_p95_basicq_lm_results = \
-    crossval_summarize_mm('pp_occ_p95_basicq_lm', X_pp_basicq, y_pp_occ_p95, scale=False, flavor='lm')
+    crossval_summarize_mm('pp_occ_p95_basicq_lm', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95, scale=False, flavor='lm')
 
 pp_occ_p95_noq_lm_results = \
-    crossval_summarize_mm('pp_occ_p95_noq_lm', X_pp_noq, y_pp_occ_p95, scale=False, flavor='lm')
+    crossval_summarize_mm('pp_occ_p95_noq_lm', 'pp', 'occ_p95', X_pp_noq, y_pp_occ_p95, scale=False, flavor='lm')
 
 # LassoCV (lassocv)
 pp_occ_mean_basicq_lassocv_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_lassocv', X_pp_basicq, y_pp_occ_mean,
+    crossval_summarize_mm('pp_occ_mean_basicq_lassocv', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean,
                           scale=True, flavor='lassocv', lasso_max_iter=3000)
 
 pp_occ_mean_noq_lassocv_results = \
-    crossval_summarize_mm('pp_occ_mean_noq_lassocv', X_pp_noq, y_pp_occ_mean,
+    crossval_summarize_mm('pp_occ_mean_noq_lassocv', 'pp', 'occ_mean', X_pp_noq, y_pp_occ_mean,
                           scale=True, flavor='lassocv', lasso_max_iter=3000)
 
 pp_occ_p95_basicq_lassocv_results = \
-    crossval_summarize_mm('pp_occ_p95_basicq_lassocv', X_pp_basicq, y_pp_occ_p95,
+    crossval_summarize_mm('pp_occ_p95_basicq_lassocv', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95,
                           scale=True, flavor='lassocv', lasso_max_iter=3000)
 
 pp_occ_p95_noq_lassocv_results = \
-    crossval_summarize_mm('pp_occ_p95_noq_lassocv', X_pp_noq, y_pp_occ_p95,
+    crossval_summarize_mm('pp_occ_p95_noq_lassocv', 'pp', 'occ_p95', X_pp_noq, y_pp_occ_p95,
                           scale=True, flavor='lassocv', lasso_max_iter=3000)
 
 # Polynomial regression (poly)
 pp_occ_mean_basicq_poly_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_poly', X_pp_basicq, y_pp_occ_mean, scale=False, flavor='poly')
+    crossval_summarize_mm('pp_occ_mean_basicq_poly', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False, flavor='poly')
 
 pp_occ_mean_noq_poly_results = \
-    crossval_summarize_mm('pp_occ_mean_noq_poly', X_pp_noq, y_pp_occ_mean, scale=False, flavor='poly')
+    crossval_summarize_mm('pp_occ_mean_noq_poly', 'pp', 'occ_mean', X_pp_noq, y_pp_occ_mean, scale=False, flavor='poly')
 
 
 pp_occ_p95_basicq_poly_results = \
-    crossval_summarize_mm('pp_occ_p95_basicq_poly', X_pp_basicq, y_pp_occ_p95, scale=False, flavor='poly')
+    crossval_summarize_mm('pp_occ_p95_basicq_poly', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95, scale=False, flavor='poly')
 
 pp_occ_p95_noq_poly_results = \
-    crossval_summarize_mm('pp_occ_p95_noq_poly', X_pp_noq, y_pp_occ_p95, scale=False, flavor='poly')
+    crossval_summarize_mm('pp_occ_p95_noq_poly', 'pp', 'occ_p95', X_pp_noq, y_pp_occ_p95, scale=False, flavor='poly')
 
 # Random forest (rf)
 pp_occ_mean_basicq_rf_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_rf', X_pp_basicq, y_pp_occ_mean, scale=False, flavor='rf')
+    crossval_summarize_mm('pp_occ_mean_basicq_rf', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False, flavor='rf')
 
 pp_occ_mean_noq_rf_results = \
-    crossval_summarize_mm('pp_occ_mean_noq_rf', X_pp_noq, y_pp_occ_mean, scale=False, flavor='rf')
+    crossval_summarize_mm('pp_occ_mean_noq_rf', 'pp', 'occ_mean', X_pp_noq, y_pp_occ_mean, scale=False, flavor='rf')
 
 pp_occ_p95_basicq_rf_results = \
-    crossval_summarize_mm('pp_occ_p95_basicq_rf', X_pp_basicq, y_pp_occ_p95, scale=False, flavor='rf')
+    crossval_summarize_mm('pp_occ_p95_basicq_rf', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95, scale=False, flavor='rf')
 
 pp_occ_p95_noq_rf_results = \
-    crossval_summarize_mm('pp_occ_p95_noq_rf', X_pp_noq, y_pp_occ_p95, scale=False, flavor='rf')
+    crossval_summarize_mm('pp_occ_p95_noq_rf', 'pp', 'occ_p95', X_pp_noq, y_pp_occ_p95, scale=False, flavor='rf')
 
 # Support vector regression (svr)
 pp_occ_mean_basicq_svr_results = \
-    crossval_summarize_mm('ldr_occ_mean_basicq_svr', X_pp_basicq, y_pp_occ_mean, flavor='svr', scale=True)
+    crossval_summarize_mm('pp_occ_mean_basicq_svr', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, flavor='svr', scale=True)
 
 pp_occ_mean_noq_svr_results = \
-    crossval_summarize_mm('ldr_occ_mean_noq_svr', X_pp_noq, y_pp_occ_mean, flavor='svr', scale=True)
+    crossval_summarize_mm('pp_occ_mean_noq_svr', 'pp', 'occ_mean', X_pp_noq, y_pp_occ_mean, flavor='svr', scale=True)
 
 
 pp_occ_p95_basicq_svr_results = \
-    crossval_summarize_mm('ldr_occ_p95_basicq_svr', X_pp_basicq, y_pp_occ_p95, flavor='svr', scale=True)
+    crossval_summarize_mm('pp_occ_p95_basicq_svr', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95, flavor='svr', scale=True)
 
 pp_occ_p95_noq_svr_results = \
-    crossval_summarize_mm('ldr_occ_p95_noq_svr', X_pp_noq, y_pp_occ_p95, flavor='svr', scale=True)
+    crossval_summarize_mm('pp_occ_p95_noq_svr', 'pp', 'occ_p95', X_pp_noq, y_pp_occ_p95, flavor='svr', scale=True)
 
 # MLPRegressor Neural net (nn)
 pp_occ_mean_basicq_nn_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_nn', X_pp_basicq, y_pp_occ_mean, flavor='nn', scale=True)
+    crossval_summarize_mm('pp_occ_mean_basicq_nn', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, flavor='nn', scale=True)
 
 pp_occ_mean_noq_nn_results = \
-    crossval_summarize_mm('pp_occ_mean_noq_nn', X_pp_noq, y_pp_occ_mean, flavor='nn', scale=True)
+    crossval_summarize_mm('pp_occ_mean_noq_nn', 'pp', 'occ_mean', X_pp_noq, y_pp_occ_mean, flavor='nn', scale=True)
 
 pp_occ_p95_basicq_nn_results = \
-    crossval_summarize_mm('pp_occ_p95_basicq_nn', X_pp_basicq, y_pp_occ_p95, flavor='nn', scale=True)
+    crossval_summarize_mm('pp_occ_p95_basicq_nn', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95, flavor='nn', scale=True)
 
 pp_occ_p95_noq_nn_results = \
-    crossval_summarize_mm('pp_occ_p95_noq_nn', X_pp_noq, y_pp_occ_p95, flavor='nn', scale=True)
+    crossval_summarize_mm('pp_occ_p95_noq_nn', 'pp', 'occ_p95', X_pp_noq, y_pp_occ_p95, flavor='nn', scale=True)
 
 # Gather results
 
@@ -118,7 +118,20 @@ pp_results = {'pp_occ_mean_basicq_lm_results': pp_occ_mean_basicq_lm_results,
               'pp_occ_mean_basicq_svr_results': pp_occ_mean_basicq_svr_results,
               'pp_occ_mean_noq_svr_results': pp_occ_mean_noq_svr_results,
               'pp_occ_mean_basicq_nn_results': pp_occ_mean_basicq_nn_results,
-              'pp_occ_mean_noq_nn_results': pp_occ_mean_noq_nn_results
+              'pp_occ_mean_noq_nn_results': pp_occ_mean_noq_nn_results,
+              'pp_occ_p95_basicq_lm_results': pp_occ_p95_basicq_lm_results,
+              'pp_occ_p95_noq_lm_results': pp_occ_p95_noq_lm_results,
+              'pp_occ_p95_basicq_lassocv_results': pp_occ_p95_basicq_lassocv_results,
+              'pp_occ_p95_noq_lassocv_results': pp_occ_p95_noq_lassocv_results,
+              'pp_occ_p95_basicq_poly_results': pp_occ_p95_basicq_poly_results,
+              'pp_occ_p95_noq_poly_results': pp_occ_p95_noq_poly_results,
+              'pp_occ_p95_basicq_rf_results': pp_occ_p95_basicq_rf_results,
+              'pp_occ_p95_noq_rf_results': pp_occ_p95_noq_rf_results,
+              'pp_occ_p95_basicq_svr_results': pp_occ_p95_basicq_svr_results,
+              'pp_occ_p95_noq_svr_results': pp_occ_p95_noq_svr_results,
+              'pp_occ_p95_basicq_nn_results': pp_occ_p95_basicq_nn_results,
+              'pp_occ_p95_noq_nn_results': pp_occ_p95_noq_nn_results
+
               }
 
 
