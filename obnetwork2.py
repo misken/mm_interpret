@@ -1,6 +1,216 @@
-import qng
+import numpy as np
 from scipy import optimize
 import pandas as pd
+from sklearn.base import BaseEstimator
+from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+
+from scipy.stats import norm
+
+import qng
+
+class ErlangcEstimator(BaseEstimator):
+    """ Erlang-C formula for probability of wait in an M/M/c queue.
+
+    No parameters are actually fit. This is just an analytical formula implemented
+    as an sklearn Estimator so that it can be used in pipelines.
+
+    Parameters
+    ----------
+    col_idx_arate : float
+        Column number in X corresponding to arrival rate
+    col_idx_meansvctime : float
+        Column number in X corresponding to mean service time
+    col_idx_numservers : int
+        Column number in X corresponding to number of servers (c) in system
+
+    """
+
+    def __init__(self, col_idx_arate, col_idx_meansvctime, col_idx_numservers):
+        self.col_idx_arate = col_idx_arate
+        self.col_idx_meansvctime = col_idx_meansvctime
+        self.col_idx_numservers = col_idx_numservers
+
+    def fit(self, X, y=None):
+        """Empty fit method since no parameters to be fit
+
+        Checks shapes of X, y and sets is_fitted_ to True.
+        Use ``predict`` to get predicted y values.
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+        y : array-like, shape (n_samples,) or (n_samples, n_outputs)
+            The target values (real numbers in
+            regression).
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        if y is not None:
+            X, y = check_X_y(X, y, accept_sparse=False)
+        else:
+            X = check_array(X, accept_sparse=False)
+        self.is_fitted_ = True
+        # `fit` should always return `self`
+        return self
+
+    def predict(self, X):
+        """ Compute Erlang-C using qng library
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            The training input samples.
+        Returns
+        -------
+        y : ndarray, shape (n_samples,)
+            Returns an array of ones.
+        """
+        X = check_array(X, accept_sparse=False)
+        check_is_fitted(self, 'is_fitted_')
+
+        X_df = pd.DataFrame(X)
+
+        y = X_df.apply(lambda x: qng.erlangc(x[self.col_idx_arate] * x[self.col_idx_meansvctime], int(x[self.col_idx_numservers])), axis=1)
+
+        return np.array(y)
+
+class LoadEstimator(BaseEstimator):
+    """ Load as approximation for mean occupancy
+
+    No parameters are actually fit. This is just an analytical formula implemented
+    as an sklearn Estimator so that it can be used in pipelines.
+
+    Parameters
+    ----------
+    col_idx_arate : float
+        Column number in X corresponding to arrival rate
+    col_idx_meansvctime : float
+        Column number in X corresponding to mean service time
+
+    """
+
+    def __init__(self, col_idx_arate, col_idx_meansvctime):
+        self.col_idx_arate = col_idx_arate
+        self.col_idx_meansvctime = col_idx_meansvctime
+
+    def fit(self, X, y=None):
+        """Empty fit method since no parameters to be fit
+
+        Checks shapes of X, y and sets is_fitted_ to True.
+        Use ``predict`` to get predicted y values.
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+        y : array-like, shape (n_samples,) or (n_samples, n_outputs)
+            The target values (real numbers in
+            regression).
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        if y is not None:
+            X, y = check_X_y(X, y, accept_sparse=False)
+        else:
+            X = check_array(X, accept_sparse=False)
+        self.is_fitted_ = True
+        # `fit` should always return `self`
+        return self
+
+    def predict(self, X):
+        """ Compute load as arrival_rate * avg_svc_time
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            The training input samples.
+        Returns
+        -------
+        y : ndarray, shape (n_samples,)
+            Returns an array of ones.
+        """
+        X = check_array(X, accept_sparse=False)
+        check_is_fitted(self, 'is_fitted_')
+
+        X_df = pd.DataFrame(X)
+
+        y = X_df.apply(lambda x: x[self.col_idx_arate] * x[self.col_idx_meansvctime], axis=1)
+
+        return np.array(y)
+
+class SqrtLoadEstimator(BaseEstimator):
+    """ Load based normal approximation for occupancy percentiles
+
+    No parameters are actually fit. This is just an analytical formula implemented
+    as an sklearn Estimator so that it can be used in pipelines.
+
+    Parameters
+    ----------
+    col_idx_arate : float
+        Column number in X corresponding to arrival rate
+    col_idx_meansvctime : float
+        Column number in X corresponding to mean service time
+    pctile: float
+        Percentile of interest
+
+    """
+
+    def __init__(self, col_idx_arate, col_idx_meansvctime, pctile):
+        self.col_idx_arate = col_idx_arate
+        self.col_idx_meansvctime = col_idx_meansvctime
+        self.pctile = pctile
+
+    def fit(self, X, y=None):
+        """Empty fit method since no parameters to be fit
+
+        Checks shapes of X, y and sets is_fitted_ to True.
+        Use ``predict`` to get predicted y values.
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+        y : array-like, shape (n_samples,) or (n_samples, n_outputs)
+            The target values (real numbers in
+            regression).
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        if y is not None:
+            X, y = check_X_y(X, y, accept_sparse=False)
+        else:
+            X = check_array(X, accept_sparse=False)
+        self.is_fitted_ = True
+        # `fit` should always return `self`
+        return self
+
+    def predict(self, X):
+        """ Compute load as arrival_rate * avg_svc_time
+        Parameters
+        ----------
+        X : {array-like, sparse matrix}, shape (n_samples, n_features)
+            The training input samples.
+        Returns
+        -------
+        y : ndarray, shape (n_samples,)
+            Returns an array of ones.
+        """
+        X = check_array(X, accept_sparse=False)
+        check_is_fitted(self, 'is_fitted_')
+
+        zscore = norm().ppf(self.pctile)
+
+        X_df = pd.DataFrame(X)
+
+        y = X_df.apply(lambda x: x[self.col_idx_arate] * x[self.col_idx_meansvctime] +
+                                 zscore * np.sqrt(x[self.col_idx_arate] * x[self.col_idx_meansvctime]), axis=1)
+
+        return np.array(y)
 
 def ldr_prob_blockedby_pp_hat(arr_rate, pp_mean_svctime, pp_cap, pp_cv2_svctime):
     """

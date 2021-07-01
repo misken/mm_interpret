@@ -48,11 +48,11 @@ ldr_occ_p95_noq_lm_results = \
     crossval_summarize_mm('ldr_occ_p95_noq_lm', 'ldr', 'occ_p95', X_ldr_noq, y_ldr_occ_p95, scale=False, flavor='lm')
 
 mean_pct_blocked_by_pp_basicq_lm_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_q_lm', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_q_lm', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
                                                scale=False, fit_intercept=True, flavor='lm')
 
 mean_pct_blocked_by_pp_q_lm_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_lm', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_lm', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
                                                scale=False, fit_intercept=True, flavor='lm')
 
 mean_pct_blocked_by_pp_noq_lm_results = \
@@ -97,11 +97,11 @@ ldr_occ_p95_noq_lassocv_results = \
                           scale=True, flavor='lassocv', lasso_max_iter=3000)
 
 mean_pct_blocked_by_pp_basicq_lassocv_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_q_lassocv', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_q_lassocv', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
                                                scale=True, flavor='lassocv', lasso_max_iter=3000)
 
 mean_pct_blocked_by_pp_q_lassocv_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_lassocv', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_lassocv', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
                                                scale=True, flavor='lassocv', lasso_max_iter=3000)
 
 mean_pct_blocked_by_pp_noq_lassocv_results = \
@@ -143,11 +143,11 @@ ldr_occ_p95_noq_poly_results = \
     crossval_summarize_mm('ldr_occ_p95_noq_poly', 'ldr', 'occ_p95', X_ldr_noq, y_ldr_occ_p95, scale=False, flavor='poly')
 
 mean_pct_blocked_by_pp_basicq_poly_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_q_poly', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_q_poly', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
                                                scale=False, flavor='lm')
 
 mean_pct_blocked_by_pp_q_poly_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_poly', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_poly', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
                                                scale=False, flavor='lm')
 
 mean_pct_blocked_by_pp_noq_poly_results = \
@@ -186,11 +186,11 @@ ldr_occ_p95_noq_rf_results = \
     crossval_summarize_mm('ldr_occ_p95_noq_rf', 'ldr', 'occ_p95', X_ldr_noq, y_ldr_occ_p95, scale=False, flavor='rf')
 
 mean_pct_blocked_by_pp_basicq_rf_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_q_rf', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_q_rf', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
                                                scale=False, flavor='rf')
 
 mean_pct_blocked_by_pp_q_rf_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_rf', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_rf', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
                                                scale=False, flavor='rf')
 
 mean_pct_blocked_by_pp_noq_rf_results = \
@@ -230,11 +230,11 @@ ldr_occ_p95_noq_svr_results = \
     crossval_summarize_mm('ldr_occ_p95_noq_svr', 'ldr', 'occ_p95', X_ldr_noq, y_ldr_occ_p95, flavor='svr', scale=True)
 
 mean_pct_blocked_by_pp_basicq_svr_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_q_svr', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_q_svr', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
                                                scale=True, flavor='svr')
 
 mean_pct_blocked_by_pp_q_svr_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_svr', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_svr', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
                                                scale=True, flavor='svr')
 
 mean_pct_blocked_by_pp_noq_svr_results = \
@@ -273,11 +273,11 @@ ldr_occ_p95_noq_nn_results = \
     crossval_summarize_mm('ldr_occ_p95_noq_nn', 'ldr', 'occ_p95', X_ldr_noq, y_ldr_occ_p95, flavor='nn', scale=True)
 
 mean_pct_blocked_by_pp_basicq_nn_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_q_nn', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_q_nn', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
                                                scale=True, flavor='nn')
 
 mean_pct_blocked_by_pp_q_nn_results = \
-    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_nn', 'ldr', 'pct_blocked_by_pp', X_ldr_basicq, y_mean_pct_blocked_by_pp,
+    crossval_summarize_mm('mean_pct_blocked_by_pp_basicq_nn', 'ldr', 'pct_blocked_by_pp', X_ldr_q, y_mean_pct_blocked_by_pp,
                                                scale=True, flavor='nn')
 
 mean_pct_blocked_by_pp_noq_nn_results = \

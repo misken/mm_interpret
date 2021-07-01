@@ -17,10 +17,19 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import cross_validate, cross_val_score, cross_val_predict, KFold
-from sklearn import metrics
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
 
+# explicitly require this experimental feature
+from sklearn.experimental import enable_hist_gradient_boosting  # noqa
+# now you can import normally from ensemble
+from sklearn.ensemble import HistGradientBoostingRegressor
+
+
 import qng
+from obnetwork2 import ErlangcEstimator, LoadEstimator, SqrtLoadEstimator
+
+
+
 
 
 def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
@@ -28,11 +37,13 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                           scale=False, fit_intercept=True, n_splits=5, kfold_shuffle=True, kfold_random_state=4,
                           return_train_score=True, return_estimator=True,
                           lasso_alpha=1.0, lasso_max_iter=1000, nn_max_iter=3000,
-                          rf_random_state=0, rf_criterion='mae', rf_min_samples_split=10):
+                          rf_random_state=0, rf_criterion='mae', rf_min_samples_split=10,
+                          col_idx_arate=None, col_idx_meansvctime=None, col_idx_numservers=None, load_pctile=0.95):
     """
 
     Parameters
     ----------
+
     scenario
     X
     y
@@ -50,6 +61,9 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
     rf_random_state
     rf_criterion
     rf_min_samples_split
+    col_idx_numservers
+    col_idx_arate
+    col_idx_meansvctime
 
     Returns
     -------
@@ -67,7 +81,10 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                         'lasso': 'lasso',
                         'lassocv': 'lassocv',
                         'poly': 'linearregression',
-                        'spline': 'linearregression'}
+                        'spline': 'linearregression',
+                        'erlangc': 'erlangcestimator',
+                        'load': 'loadestimator',
+                        'sqrtload': 'sqrtloadestimator'}
 
     steps = []
     if scale:
@@ -87,8 +104,19 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
         steps.extend([SVR()])
     elif flavor == 'nn':
         steps.extend([MLPRegressor(max_iter=3000)])
+    elif flavor == 'hgbr':
+        steps.extend([HistGradientBoostingRegressor(max_iter=3000)])
     elif flavor == 'poly':
         steps.extend([PolynomialFeatures(2), LinearRegression(fit_intercept=fit_intercept)])
+    elif flavor == 'erlangc':
+        steps.extend([ErlangcEstimator(col_idx_arate=col_idx_arate, col_idx_meansvctime=col_idx_meansvctime,
+                                       col_idx_numservers=col_idx_numservers)])
+    elif flavor == 'load':
+        steps.extend([LoadEstimator(col_idx_arate=col_idx_arate, col_idx_meansvctime=col_idx_meansvctime)])
+    elif flavor == 'sqrtload':
+        steps.extend([SqrtLoadEstimator(col_idx_arate=col_idx_arate, col_idx_meansvctime=col_idx_meansvctime,
+                                        pctile=load_pctile)])
+
     else:
         raise ValueError(f"Unknown flavor: {flavor}")
 

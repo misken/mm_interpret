@@ -38,7 +38,10 @@ def create_metrics_df(results_dict, output_path):
     return consolidated_metrics_df
 
 
-for unit in ['pp', 'ldr', 'obs']:
+#units_to_process = ['pp', 'ldr', 'obs']
+units_to_process = ['pp']
+
+for unit in units_to_process:
     with open(Path("output", f"{unit}_results.pkl"), 'rb') as pickle_file:
         pickeled_results = pickle.load(pickle_file)
 

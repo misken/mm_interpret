@@ -105,6 +105,25 @@ pp_occ_p95_basicq_nn_results = \
 pp_occ_p95_noq_nn_results = \
     crossval_summarize_mm('pp_occ_p95_noq_nn', 'pp', 'occ_p95', X_pp_noq, y_pp_occ_p95, flavor='nn', scale=True)
 
+# Load based models
+
+pp_occ_mean_basicq_load_results = \
+    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False,
+                          flavor='load', col_idx_arate=0, col_idx_meansvctime=1)
+
+pp_occ_p95_basicq_sqrtload_results = \
+    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_p95, scale=False,
+                          flavor='sqrtload', col_idx_arate=0, col_idx_meansvctime=1, load_pctile=0.95)
+
+# HGBR
+pp_occ_mean_basicq_hgbr_results = \
+    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False,
+                          flavor='hgbr')
+
+pp_occ_p95_basicq_hgbr_results = \
+    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_p95, scale=False,
+                          flavor='hgbr')
+
 # Gather results
 
 pp_results = {'pp_occ_mean_basicq_lm_results': pp_occ_mean_basicq_lm_results,
@@ -130,7 +149,9 @@ pp_results = {'pp_occ_mean_basicq_lm_results': pp_occ_mean_basicq_lm_results,
               'pp_occ_p95_basicq_svr_results': pp_occ_p95_basicq_svr_results,
               'pp_occ_p95_noq_svr_results': pp_occ_p95_noq_svr_results,
               'pp_occ_p95_basicq_nn_results': pp_occ_p95_basicq_nn_results,
-              'pp_occ_p95_noq_nn_results': pp_occ_p95_noq_nn_results
+              'pp_occ_p95_noq_nn_results': pp_occ_p95_noq_nn_results,
+              'pp_occ_mean_basicq_load_results': pp_occ_mean_basicq_load_results,
+              'pp_occ_p95_basicq_sqrtload_results': pp_occ_p95_basicq_sqrtload_results
 
               }
 
