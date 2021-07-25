@@ -5,18 +5,19 @@ import pandas as pd
 
 from mmfitting import crossval_summarize_mm
 
+experiment = "exp10obflow06"
 data_path = Path("data")
 output_path = Path("output")
 figures_path = Path("output", "figures")
 raw_data_path = Path("data", "raw")
 
 # X matrices
-X_pp_noq = pd.read_csv(Path(data_path, 'X_pp_noq.csv'), index_col=0)
-X_pp_basicq = pd.read_csv(Path(data_path, 'X_pp_basicq.csv'), index_col=0)
+X_pp_noq = pd.read_csv(Path(data_path, f'X_pp_noq_{experiment}.csv'), index_col=0)
+X_pp_basicq = pd.read_csv(Path(data_path, f'X_pp_basicq_{experiment}.csv'), index_col=0)
 
 # y vectors
-y_pp_occ_mean = pd.read_csv(Path(data_path, 'y_pp_occ_mean.csv'), index_col=0, squeeze=True)
-y_pp_occ_p95 = pd.read_csv(Path(data_path, 'y_pp_occ_p95.csv'), index_col=0, squeeze=True)
+y_pp_occ_mean = pd.read_csv(Path(data_path, f'y_pp_occ_mean_{experiment}.csv'), index_col=0, squeeze=True)
+y_pp_occ_p95 = pd.read_csv(Path(data_path, f'y_pp_occ_p95_{experiment}.csv'), index_col=0, squeeze=True)
 
 # Fit models
 
@@ -108,20 +109,20 @@ pp_occ_p95_noq_nn_results = \
 # Load based models
 
 pp_occ_mean_basicq_load_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False,
+    crossval_summarize_mm('pp_occ_mean_basicq_load', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False,
                           flavor='load', col_idx_arate=0, col_idx_meansvctime=1)
 
 pp_occ_p95_basicq_sqrtload_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_p95, scale=False,
+    crossval_summarize_mm('pp_occ_p95_basicq_sqrtload', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95, scale=False,
                           flavor='sqrtload', col_idx_arate=0, col_idx_meansvctime=1, load_pctile=0.95)
 
 # HGBR
 pp_occ_mean_basicq_hgbr_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False,
+    crossval_summarize_mm('pp_occ_mean_basicq_hgbr', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False,
                           flavor='hgbr')
 
 pp_occ_p95_basicq_hgbr_results = \
-    crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_p95, scale=False,
+    crossval_summarize_mm('pp_occ_mean_basicq_hgbr', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_p95, scale=False,
                           flavor='hgbr')
 
 # Gather results
@@ -151,11 +152,13 @@ pp_results = {'pp_occ_mean_basicq_lm_results': pp_occ_mean_basicq_lm_results,
               'pp_occ_p95_basicq_nn_results': pp_occ_p95_basicq_nn_results,
               'pp_occ_p95_noq_nn_results': pp_occ_p95_noq_nn_results,
               'pp_occ_mean_basicq_load_results': pp_occ_mean_basicq_load_results,
-              'pp_occ_p95_basicq_sqrtload_results': pp_occ_p95_basicq_sqrtload_results
+              'pp_occ_p95_basicq_sqrtload_results': pp_occ_p95_basicq_sqrtload_results,
+              'pp_occ_mean_basicq_hgbr_results': pp_occ_mean_basicq_hgbr_results,
+              'pp_occ_p95_basicq_hgbr_results': pp_occ_p95_basicq_hgbr_results
 
               }
 
 
 # Pickle the results
-with open(Path(output_path, "pp_results.pkl"), 'wb') as pickle_file:
+with open(Path(output_path, f"pp_results_{experiment}.pkl"), 'wb') as pickle_file:
     pickle.dump(pp_results, pickle_file)

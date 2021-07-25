@@ -77,6 +77,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
     metric_names = [f"{p}_{s}" for s in scoring for p in partitions]
     var_names = X.columns.to_list()
     flavors_w_coeffs = ['lm', 'lasso', 'lassocv', 'poly']
+    flavors_nocv = ['erlangc', 'load', 'sqrtload']
     flavor_estimator = {'lm': 'linearregression',
                         'lasso': 'lasso',
                         'lassocv': 'lassocv',
@@ -162,7 +163,12 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
     metrics_df = pd.DataFrame(metrics)
 
     # Create predictions
-    predictions = cross_val_predict(model, X, y)
+    if flavor not in flavors_nocv:
+        predictions = cross_val_predict(model, X, y)
+    else:
+        predictions = model_final.predict(X)
+
+    residuals = predictions - y
 
     # Create scatter of actual vs predicted
     fig_scatter = prediction_scatter(y, predictions, f"{scenario} - cross_val_predict")
@@ -223,6 +229,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                    'scaled_coeffs_df': coeffs_df,
                    'alphas': alphas,
                    'predictions': predictions,
+                   'residuals': residuals,
                    'fitplot': fig_scatter,
                    'coefplot': fig_coeffs}
     else:
@@ -233,6 +240,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                    'model': model_final,
                    'metrics_df': metrics_df,
                    'predictions': predictions,
+                   'residuals': residuals,
                    'fitplot': fig_scatter}
 
     return results
