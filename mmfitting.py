@@ -25,8 +25,8 @@ from sklearn.experimental import enable_hist_gradient_boosting  # noqa
 from sklearn.ensemble import HistGradientBoostingRegressor
 
 
-import qng
-from obnetwork2 import ErlangcEstimator, LoadEstimator, SqrtLoadEstimator
+from qng import qng
+from obnetwork.obnetwork import ErlangcEstimator, LoadEstimator, SqrtLoadEstimator
 
 
 
@@ -217,7 +217,6 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
             # Put them together with intercept as first column
             unscaled_coeffs_df = pd.concat([unscaled_coeffs_df2, unscaled_coeffs_df1], axis=1)
 
-
         results = {'scenario': scenario,
                    'measure': measure,
                    'flavor': flavor,
@@ -383,6 +382,7 @@ def prediction_scatter(actual, predicted, title, ax_anchor=0):
     ax.set_ylabel('predicted')  # Add a y-label to the axes.
     ax.set_title(title)  # Add a title to the axes.
     return fig
+
 
 def coeffs_by_fold(coeffs_df, col_wrap=5, sharey=False):
     """

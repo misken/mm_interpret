@@ -5,11 +5,12 @@ import pandas as pd
 
 from mmfitting import crossval_summarize_mm
 
-experiment = "exp10obflow06"
+experiment = "exp11"
 data_path = Path("data")
 output_path = Path("output")
 figures_path = Path("output", "figures")
 raw_data_path = Path("data", "raw")
+pickle_filename = f"pp_results_{experiment}.pkl"
 
 # X matrices
 X_pp_noq = pd.read_csv(Path(data_path, f'X_pp_noq_{experiment}.csv'), index_col=0)
@@ -160,5 +161,5 @@ pp_results = {'pp_occ_mean_basicq_lm_results': pp_occ_mean_basicq_lm_results,
 
 
 # Pickle the results
-with open(Path(output_path, f"pp_results_{experiment}.pkl"), 'wb') as pickle_file:
+with open(Path(output_path, pickle_filename), 'wb') as pickle_file:
     pickle.dump(pp_results, pickle_file)

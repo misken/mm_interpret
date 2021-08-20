@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 
 from mmfitting import crossval_summarize_mm
 
-experiment = "exp10obflow06"
+experiment = "exp11"
 data_path = Path("data")
 output_path = Path("output")
 figures_path = Path("output", "figures")
 raw_data_path = Path("data", "raw")
+pickle_filename = f"obs_results2_{experiment}.pkl"
 
 # X matrices
 X_obs_noq = pd.read_csv(Path(data_path, f'X_obs_noq_{experiment}.csv'), index_col=0)
@@ -265,5 +266,5 @@ obs_results = {
 
 
 # Pickle the results
-with open(Path(output_path, f"obs_results2_{experiment}.pkl"), 'wb') as pickle_file:
+with open(Path(output_path, pickle_filename), 'wb') as pickle_file:
     pickle.dump(obs_results, pickle_file)

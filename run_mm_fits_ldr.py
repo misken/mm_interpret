@@ -8,11 +8,12 @@ from mmfitting import crossval_summarize_mm
 
 plt.ioff()
 
-experiment = "exp10obflow06"
+experiment = "exp11"
 data_path = Path("data")
 output_path = Path("output")
 figures_path = Path("output", "figures")
 raw_data_path = Path("data", "raw")
+pickle_filename = f"ldr_results_{experiment}.pkl"
 
 # X matrices
 X_ldr_noq = pd.read_csv(Path(data_path, f'X_ldr_noq_{experiment}.csv'), index_col=0)
@@ -131,7 +132,8 @@ ldr_occ_mean_q_poly_results = \
     crossval_summarize_mm('ldr_occ_mean_q_poly', 'ldr', 'occ_mean', X_ldr_q, y_ldr_occ_mean, scale=False, flavor='poly')
 
 ldr_occ_mean_noq_poly_results = \
-    crossval_summarize_mm('ldr_occ_mean_noq_poly', 'ldr', 'occ_mean', X_ldr_noq, y_ldr_occ_mean, scale=False, flavor='poly')
+    crossval_summarize_mm('ldr_occ_mean_noq_poly', 'ldr', 'occ_mean', X_ldr_noq, y_ldr_occ_mean, scale=False,
+                          flavor='poly')
 
 
 ldr_occ_p95_basicq_poly_results = \
@@ -393,5 +395,5 @@ ldr_results = {'ldr_occ_mean_basicq_lm_results': ldr_occ_mean_basicq_lm_results,
 
 
 # Pickle the results
-with open(Path(output_path, f"ldr_results_{experiment}.pkl"), 'wb') as pickle_file:
+with open(Path(output_path, pickle_filename), 'wb') as pickle_file:
     pickle.dump(ldr_results, pickle_file)
