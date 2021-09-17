@@ -26,24 +26,25 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 
 
 from qng import qng
-from obnetwork.obnetwork import ErlangcEstimator, LoadEstimator, SqrtLoadEstimator
-
-
-
+from obnetwork import ErlangcEstimator, LoadEstimator, SqrtLoadEstimator, CondMeanWaitLDREstimator
 
 
 def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
-                          scoring=['neg_mean_absolute_error', 'neg_mean_absolute_percentage_error', 'r2'],
+                          scoring=('neg_mean_absolute_error', 'neg_mean_absolute_percentage_error', 'r2'),
                           scale=False, fit_intercept=True, n_splits=5, kfold_shuffle=True, kfold_random_state=4,
                           return_train_score=True, return_estimator=True,
                           lasso_alpha=1.0, lasso_max_iter=1000, nn_max_iter=3000,
                           rf_random_state=0, rf_criterion='mae', rf_min_samples_split=10,
-                          col_idx_arate=None, col_idx_meansvctime=None, col_idx_numservers=None, load_pctile=0.95):
+                          col_idx_arate=None, col_idx_meansvctime=None, col_idx_numservers=None,
+                          col_idx_cv2svctime=None, load_pctile=0.95):
     """
 
     Parameters
     ----------
 
+    load_pctile
+    measure
+    unit
     scenario
     X
     y
@@ -77,7 +78,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
     metric_names = [f"{p}_{s}" for s in scoring for p in partitions]
     var_names = X.columns.to_list()
     flavors_w_coeffs = ['lm', 'lasso', 'lassocv', 'poly']
-    flavors_nocv = ['erlangc', 'load', 'sqrtload']
+    flavors_nocv = ['erlangc', 'load', 'sqrtload', 'condmeanwaitldr']
     flavor_estimator = {'lm': 'linearregression',
                         'lasso': 'lasso',
                         'lassocv': 'lassocv',
@@ -112,6 +113,9 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
     elif flavor == 'erlangc':
         steps.extend([ErlangcEstimator(col_idx_arate=col_idx_arate, col_idx_meansvctime=col_idx_meansvctime,
                                        col_idx_numservers=col_idx_numservers)])
+    elif flavor == 'condmeanwaitldr':
+        steps.extend([CondMeanWaitLDREstimator(col_idx_arate=col_idx_arate, col_idx_meansvctime=col_idx_meansvctime,
+                                       col_idx_numservers=col_idx_numservers, col_idx_cv2svctime=col_idx_cv2svctime)])
     elif flavor == 'load':
         steps.extend([LoadEstimator(col_idx_arate=col_idx_arate, col_idx_meansvctime=col_idx_meansvctime)])
     elif flavor == 'sqrtload':

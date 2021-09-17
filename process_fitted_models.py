@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 def create_cv_plots(experiment, unit, results_dict, figures_path):
 
     for key in results_dict.keys():
+        print(f"cv plot: {key}")
         scenario = results_dict[key]['scenario']
         scatter_plot = results_dict[key]['fitplot']
         plot_name = f"{experiment}_{unit}_{scenario}_cv_scatter.png"
@@ -19,6 +20,7 @@ def create_coeff_plots(experiment, unit, results_dict, figures_path):
     for key in results_dict.keys():
         scenario = results_dict[key]['scenario']
         if 'coefplot' in results_dict[key].keys():
+            print(f"coeff plot: {key}")
             scatter_plot = results_dict[key]['coefplot']
             plot_name = f"{experiment}_{unit}_{scenario}_cv_coeff.png"
             scatter_plot.savefig(Path(figures_path, plot_name))
@@ -27,6 +29,7 @@ def create_coeff_plots(experiment, unit, results_dict, figures_path):
 def create_metrics_df(results_dict, output_path):
     dfs = []
     for key in results_dict.keys():
+        print(f"metrics df: {key}")
         scenario = results_dict[key]['scenario']
 
         metrics_df = results_dict[key]['metrics_df']
@@ -85,12 +88,12 @@ def process_command_line():
 
 if __name__ == '__main__':
 
-    override_args = False
+    override_args = True
 
     if override_args:
         experiment = "exp11"
-        unit = "pp"
-        pkl_to_process = "pp_results_exp11.pkl"
+        unit = "ldr"
+        pkl_to_process = "ldr_results_exp11.pkl"
         output_path = "output"
         figures_path = f"output/figures/{experiment}"
     else:
@@ -101,15 +104,13 @@ if __name__ == '__main__':
         output_path = pfm_args.output_path
         figures_path = pfm_args.figures_path
 
+    with open(Path(output_path, pkl_to_process), 'rb') as pickle_file:
+        pickeled_results = pickle.load(pickle_file)
+        create_cv_plots(experiment, unit, pickeled_results, Path(figures_path))
+        create_coeff_plots(experiment, unit, pickeled_results, Path(figures_path))
 
-
-with open(Path(output_path, pkl_to_process), 'rb') as pickle_file:
-    pickeled_results = pickle.load(pickle_file)
-    create_cv_plots(experiment, unit, pickeled_results, Path(figures_path))
-    create_coeff_plots(experiment, unit, pickeled_results, Path(figures_path))
-
-    metrics_df = create_metrics_df(pickeled_results, Path("output_path"))
-    metrics_df.to_csv(Path(output_path, f"{experiment}_{unit}_metrics_df.csv"), index=False)
+        metrics_df = create_metrics_df(pickeled_results, Path("output_path"))
+        metrics_df.to_csv(Path(output_path, f"{experiment}_{unit}_metrics_df.csv"), index=False)
 
 
 

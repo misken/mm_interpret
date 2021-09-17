@@ -16,6 +16,9 @@ pickle_filename = f"pp_results_{experiment}.pkl"
 X_pp_noq = pd.read_csv(Path(data_path, f'X_pp_noq_{experiment}.csv'), index_col=0)
 X_pp_basicq = pd.read_csv(Path(data_path, f'X_pp_basicq_{experiment}.csv'), index_col=0)
 
+X_pp_occ_mean_onlyq = pd.read_csv(Path(data_path, f'X_pp_occmean_onlyq_{experiment}.csv'))
+X_pp_occ_p95_onlyq = pd.read_csv(Path(data_path, f'X_pp_occp95_onlyq_{experiment}.csv'))
+
 # y vectors
 y_pp_occ_mean = pd.read_csv(Path(data_path, f'y_pp_occ_mean_{experiment}.csv'), index_col=0, squeeze=True)
 y_pp_occ_p95 = pd.read_csv(Path(data_path, f'y_pp_occ_p95_{experiment}.csv'), index_col=0, squeeze=True)
@@ -117,6 +120,15 @@ pp_occ_p95_basicq_sqrtload_results = \
     crossval_summarize_mm('pp_occ_p95_basicq_sqrtload', 'pp', 'occ_p95', X_pp_basicq, y_pp_occ_p95, scale=False,
                           flavor='sqrtload', col_idx_arate=0, col_idx_meansvctime=1, load_pctile=0.95)
 
+# Linear models using only queueing approximation terms
+pp_occ_mean_onlyq_lm_results = \
+    crossval_summarize_mm('pp_occ_mean_onlyq_lm', 'pp', 'occ_mean',
+                          X_pp_occ_mean_onlyq, y_pp_occ_mean, scale=False, flavor='lm')
+
+pp_occ_p95_onlyq_lm_results = \
+    crossval_summarize_mm('pp_occ_p95_onlyq_lm', 'pp', 'occ_p95',
+                          X_pp_occ_p95_onlyq, y_pp_occ_p95, scale=False, flavor='lm')
+
 # HGBR
 pp_occ_mean_basicq_hgbr_results = \
     crossval_summarize_mm('pp_occ_mean_basicq_hgbr', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False,
@@ -140,6 +152,7 @@ pp_results = {'pp_occ_mean_basicq_lm_results': pp_occ_mean_basicq_lm_results,
               'pp_occ_mean_noq_svr_results': pp_occ_mean_noq_svr_results,
               'pp_occ_mean_basicq_nn_results': pp_occ_mean_basicq_nn_results,
               'pp_occ_mean_noq_nn_results': pp_occ_mean_noq_nn_results,
+              'pp_occ_mean_onlyq_lm_results': pp_occ_mean_onlyq_lm_results,
               'pp_occ_p95_basicq_lm_results': pp_occ_p95_basicq_lm_results,
               'pp_occ_p95_noq_lm_results': pp_occ_p95_noq_lm_results,
               'pp_occ_p95_basicq_lassocv_results': pp_occ_p95_basicq_lassocv_results,
@@ -155,8 +168,8 @@ pp_results = {'pp_occ_mean_basicq_lm_results': pp_occ_mean_basicq_lm_results,
               'pp_occ_mean_basicq_load_results': pp_occ_mean_basicq_load_results,
               'pp_occ_p95_basicq_sqrtload_results': pp_occ_p95_basicq_sqrtload_results,
               'pp_occ_mean_basicq_hgbr_results': pp_occ_mean_basicq_hgbr_results,
-              'pp_occ_p95_basicq_hgbr_results': pp_occ_p95_basicq_hgbr_results
-
+              'pp_occ_p95_basicq_hgbr_results': pp_occ_p95_basicq_hgbr_results,
+              'pp_occ_p95_onlyq_lm_results': pp_occ_p95_onlyq_lm_results
               }
 
 
