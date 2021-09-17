@@ -20,11 +20,11 @@ X_ldr_noq = pd.read_csv(Path(data_path, f'X_ldr_noq_{experiment}.csv'), index_co
 X_ldr_basicq = pd.read_csv(Path(data_path, f'X_ldr_basicq_{experiment}.csv'), index_col=0)
 X_ldr_q = pd.read_csv(Path(data_path, f'X_ldr_q_{experiment}.csv'), index_col=0)
 
-X_ldr_occ_mean_onlyq = pd.read_csv(Path(data_path, f'X_ldr_occmean_onlyq_{experiment}.csv'))
-X_ldr_occ_p95_onlyq = pd.read_csv(Path(data_path, f'X_ldr_occp95_onlyq_{experiment}.csv'))
-X_ldr_prob_blockedby_pp_onlyq = pd.read_csv(Path(data_path, f'X_ldr_prob_blockedby_pp_onlyq_{experiment}.csv'))
+X_ldr_occ_mean_onlyq = pd.read_csv(Path(data_path, f'X_ldr_occmean_onlyq_{experiment}.csv'), index_col=0)
+X_ldr_occ_p95_onlyq = pd.read_csv(Path(data_path, f'X_ldr_occp95_onlyq_{experiment}.csv'), index_col=0)
+X_ldr_prob_blockedby_pp_onlyq = pd.read_csv(Path(data_path, f'X_ldr_prob_blockedby_pp_onlyq_{experiment}.csv'), index_col=0)
 X_ldr_condmeantime_blockedbypp_onlyq = \
-    pd.read_csv(Path(data_path, f'X_ldr_condmeantime_blockedbypp_onlyq_{experiment}.csv'))
+    pd.read_csv(Path(data_path, f'X_ldr_condmeantime_blockedbypp_onlyq_{experiment}.csv'), index_col=0)
 
 # y vectors
 y_ldr_occ_mean = pd.read_csv(Path(data_path, f'y_ldr_occ_mean_{experiment}.csv'), index_col=0, squeeze=True)

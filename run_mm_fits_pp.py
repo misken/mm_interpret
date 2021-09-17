@@ -16,8 +16,8 @@ pickle_filename = f"pp_results_{experiment}.pkl"
 X_pp_noq = pd.read_csv(Path(data_path, f'X_pp_noq_{experiment}.csv'), index_col=0)
 X_pp_basicq = pd.read_csv(Path(data_path, f'X_pp_basicq_{experiment}.csv'), index_col=0)
 
-X_pp_occ_mean_onlyq = pd.read_csv(Path(data_path, f'X_pp_occmean_onlyq_{experiment}.csv'))
-X_pp_occ_p95_onlyq = pd.read_csv(Path(data_path, f'X_pp_occp95_onlyq_{experiment}.csv'))
+X_pp_occ_mean_onlyq = pd.read_csv(Path(data_path, f'X_pp_occmean_onlyq_{experiment}.csv'), index_col=0)
+X_pp_occ_p95_onlyq = pd.read_csv(Path(data_path, f'X_pp_occp95_onlyq_{experiment}.csv'), index_col=0)
 
 # y vectors
 y_pp_occ_mean = pd.read_csv(Path(data_path, f'y_pp_occ_mean_{experiment}.csv'), index_col=0, squeeze=True)
