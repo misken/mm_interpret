@@ -77,16 +77,17 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
     partitions = ['test', 'train']
     metric_names = [f"{p}_{s}" for s in scoring for p in partitions]
     var_names = X.columns.to_list()
-    flavors_w_coeffs = ['lm', 'lasso', 'lassocv', 'poly']
+
     flavors_nocv = ['erlangc', 'load', 'sqrtload', 'condmeanwaitldr']
+
+    flavors_w_coeffs = ['lm', 'lasso', 'lassocv', 'poly']
+    # Only need mappings for flavors in flavors_w_coeffs
     flavor_estimator = {'lm': 'linearregression',
                         'lasso': 'lasso',
                         'lassocv': 'lassocv',
                         'poly': 'linearregression',
                         'spline': 'linearregression',
-                        'erlangc': 'erlangcestimator',
-                        'load': 'loadestimator',
-                        'sqrtload': 'sqrtloadestimator'}
+                        }
 
     steps = []
     if scale:

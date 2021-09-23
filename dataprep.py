@@ -60,8 +60,8 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     # LDR can have LOS shortened by patients blocked in OBS and have LOS lengthened
     # by patients blocked in LDR by PP
     X_ldr_q_cols = X_ldr_basicq_cols.copy()
-    X_ldr_q_cols.extend(['prob_blockedby_pp_approx', 'condmeantime_blockedbypp_approx',
-                         'prob_blockedby_ldr_approx', 'condmeantime_blockedbyldr_approx',
+    X_ldr_q_cols.extend(['prob_blockedby_pp_approx', 'condmeantime_blockedby_pp_approx',
+                         'prob_blockedby_ldr_approx', 'condmeantime_blockedby_ldr_approx',
                          'pp_cv2_svctime',
                          'ldr_eff_load', 'ldr_eff_sqrtload', 'ldr_effmean_svctime_approx'])
 
@@ -72,19 +72,19 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     X_ldr_occmean_onlyq_cols = ['ldr_eff_load']
     X_ldr_occp95_onlyq_cols = ['ldr_eff_load', 'ldr_eff_sqrtload']
     X_ldr_prob_blockedby_pp_onlyq_cols = ['prob_blockedby_pp_approx']
-    X_ldr_condmeantime_blockedbypp_onlyq_cols = ['condmeantime_blockedbypp_approx']
+    X_ldr_condmeantime_blockedby_pp_onlyq_cols = ['condmeantime_blockedby_pp_approx']
 
     X_obs_occmean_onlyq_cols = ['obs_eff_load']
     X_obs_occp95_onlyq_cols = ['obs_eff_load', 'obs_eff_sqrtload']
     X_obs_prob_blockedby_ldr_onlyq_cols = ['prob_blockedby_ldr_approx']
-    X_obs_condmeantime_blockedbyldr_onlyq_cols = ['condmeantime_blockedbyldr_approx']
+    X_obs_condmeantime_blockedby_ldr_onlyq_cols = ['condmeantime_blockedby_ldr_approx']
 
 
     # OBS modeled as infinite capacity system but time in system impacted by
     # congestion in the downstream units.
     X_obs_q_cols = X_obs_basicq_cols.copy()
-    X_obs_q_cols.extend(['prob_blockedby_pp_approx', 'condmeantime_blockedbypp_approx',
-                         'prob_blockedby_ldr_approx', 'condmeantime_blockedbyldr_approx',
+    X_obs_q_cols.extend(['prob_blockedby_pp_approx', 'condmeantime_blockedby_pp_approx',
+                         'prob_blockedby_ldr_approx', 'condmeantime_blockedby_ldr_approx',
                          'ldr_cv2_svctime',
                          'obs_eff_load', 'obs_eff_sqrtload', 'ldr_effmean_svctime_approx'])
 
@@ -113,7 +113,7 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     X_ldr_occmean_onlyq = xy_df.loc[scenarios, X_ldr_occmean_onlyq_cols]
     X_ldr_occp95_onlyq = xy_df.loc[scenarios, X_ldr_occp95_onlyq_cols]
     X_ldr_prob_blockedby_pp_onlyq = xy_df.loc[scenarios, X_ldr_prob_blockedby_pp_onlyq_cols]
-    X_ldr_condmeantime_blockedbypp_onlyq = xy_df.loc[scenarios, X_ldr_condmeantime_blockedbypp_onlyq_cols]
+    X_ldr_condmeantime_blockedby_pp_onlyq = xy_df.loc[scenarios, X_ldr_condmeantime_blockedby_pp_onlyq_cols]
 
     # OBS
     X_obs_basicq = xy_df.loc[scenarios, X_obs_basicq_cols]
@@ -129,7 +129,7 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     X_obs_occmean_onlyq = xy_df.loc[scenarios, X_obs_occmean_onlyq_cols]
     X_obs_occp95_onlyq = xy_df.loc[scenarios, X_obs_occp95_onlyq_cols]
     X_obs_prob_blockedby_ldr_onlyq = xy_df.loc[scenarios, X_obs_prob_blockedby_ldr_onlyq_cols]
-    X_obs_condmeantime_blockedbyldr_onlyq = xy_df.loc[scenarios, X_obs_condmeantime_blockedbyldr_onlyq_cols]
+    X_obs_condmeantime_blockedby_ldr_onlyq = xy_df.loc[scenarios, X_obs_condmeantime_blockedby_ldr_onlyq_cols]
 
     # y vectors
     y_pp_occ_mean = xy_df.loc[scenarios, 'occ_mean_mean_pp']
@@ -139,10 +139,10 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     y_obs_occ_mean = xy_df.loc[scenarios, 'occ_mean_mean_obs']
     y_obs_occ_p95 = xy_df.loc[scenarios, 'occ_mean_p95_obs']
 
-    y_prob_blocked_by_pp = xy_df.loc[scenarios, 'prob_blockedby_pp_sim']
-    y_prob_blocked_by_ldr = xy_df.loc[scenarios, 'prob_blockedby_ldr_sim']
-    y_condmeantime_blockedbyldr = xy_df.loc[scenarios, 'condmeantime_blockedbyldr_sim']
-    y_condmeantime_blockedbypp = xy_df.loc[scenarios, 'condmeantime_blockedbypp_sim']
+    y_prob_blockedby_pp = xy_df.loc[scenarios, 'prob_blockedby_pp_sim']
+    y_prob_blockedby_ldr = xy_df.loc[scenarios, 'prob_blockedby_ldr_sim']
+    y_condmeantime_blockedby_ldr = xy_df.loc[scenarios, 'condmeantime_blockedby_ldr_sim']
+    y_condmeantime_blockedby_pp = xy_df.loc[scenarios, 'condmeantime_blockedby_pp_sim']
 
     # Write dataframes to csv
     X_pp_noq.to_csv(Path(output_path, f'X_pp_noq_{exp}.csv'))
@@ -156,7 +156,7 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     X_ldr_occmean_onlyq.to_csv(Path(output_path, f'X_ldr_occmean_onlyq_{exp}.csv'))
     X_ldr_occp95_onlyq.to_csv(Path(output_path, f'X_ldr_occp95_onlyq_{exp}.csv'))
     X_ldr_prob_blockedby_pp_onlyq.to_csv(Path(output_path, f'X_ldr_prob_blockedby_pp_onlyq_{exp}.csv'))
-    X_ldr_condmeantime_blockedbypp_onlyq.to_csv(Path(output_path, f'X_ldr_condmeantime_blockedbypp_onlyq_{exp}.csv'))
+    X_ldr_condmeantime_blockedby_pp_onlyq.to_csv(Path(output_path, f'X_ldr_condmeantime_blockedby_pp_onlyq_{exp}.csv'))
 
     X_obs_noq.to_csv(Path(output_path, f'X_obs_noq_{exp}.csv'))
     X_obs_basicq.to_csv(Path(output_path, f'X_obs_basicq_{exp}.csv'))
@@ -164,7 +164,7 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     X_obs_occmean_onlyq.to_csv(Path(output_path, f'X_obs_occmean_onlyq_{exp}.csv'))
     X_obs_occp95_onlyq.to_csv(Path(output_path, f'X_obs_occp95_onlyq_{exp}.csv'))
     X_obs_prob_blockedby_ldr_onlyq.to_csv(Path(output_path, f'X_obs_prob_blockedby_ldr_onlyq_{exp}.csv'))
-    X_obs_condmeantime_blockedbyldr_onlyq.to_csv(Path(output_path, f'X_obs_condmeantime_blockedbyldr_onlyq_{exp}.csv'))
+    X_obs_condmeantime_blockedby_ldr_onlyq.to_csv(Path(output_path, f'X_obs_condmeantime_blockedby_ldr_onlyq_{exp}.csv'))
 
     y_pp_occ_mean.to_csv(Path(output_path, f'y_pp_occ_mean_{exp}.csv'))
     y_pp_occ_p95.to_csv(Path(output_path, f'y_pp_occ_p95_{exp}.csv'))
@@ -173,10 +173,10 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     y_obs_occ_mean.to_csv(Path(output_path, f'y_obs_occ_mean_{exp}.csv'))
     y_obs_occ_p95.to_csv(Path(output_path, f'y_obs_occ_p95_{exp}.csv'))
 
-    y_prob_blocked_by_pp.to_csv(Path(output_path, f'y_prob_blocked_by_pp_{exp}.csv'))
-    y_prob_blocked_by_ldr.to_csv(Path(output_path, f'y_prob_blocked_by_ldr_{exp}.csv'))
-    y_condmeantime_blockedbyldr.to_csv(Path(output_path, f'y_condmeantime_blockedbyldr_{exp}.csv'))
-    y_condmeantime_blockedbypp.to_csv(Path(output_path, f'y_condmeantime_blockedbypp_{exp}.csv'))
+    y_prob_blockedby_pp.to_csv(Path(output_path, f'y_prob_blockedby_pp_{exp}.csv'))
+    y_prob_blockedby_ldr.to_csv(Path(output_path, f'y_prob_blockedby_ldr_{exp}.csv'))
+    y_condmeantime_blockedby_ldr.to_csv(Path(output_path, f'y_condmeantime_blockedby_ldr_{exp}.csv'))
+    y_condmeantime_blockedby_pp.to_csv(Path(output_path, f'y_condmeantime_blockedby_pp_{exp}.csv'))
 
 
 def qng_approx_from_inputs(scenario_inputs_summary):
@@ -208,11 +208,11 @@ def qng_approx_from_inputs(scenario_inputs_summary):
                                                                          pp_cv2_svctime)
         ldr_meantime_blockedby_pp = obnetwork.condmeantime_blockedby_pp_hat(arr_rate, pp_mean_svctime, pp_cap,
                                                                                       pp_cv2_svctime)
-        (obs_meantime_blockedbyldr, ldr_effmean_svctime, obs_prob_blockedby_ldr, obs_condmeantime_blockedbyldr) = \
+        (obs_meantime_blockedby_ldr, ldr_effmean_svctime, obs_prob_blockedby_ldr, obs_condmeantime_blockedby_ldr) = \
             obnetwork.obs_blockedby_ldr_hats(arr_rate, c_sect_prob, ldr_mean_svctime, ldr_cv2_svctime, ldr_cap,
                                                       pp_mean_svctime, pp_cv2_svctime, pp_cap)
 
-        obs_effmean_svctime = obs_mean_svctime + obs_prob_blockedby_ldr * obs_condmeantime_blockedbyldr
+        obs_effmean_svctime = obs_mean_svctime + obs_prob_blockedby_ldr * obs_condmeantime_blockedby_ldr
         obs_eff_load = arr_rate * obs_effmean_svctime
         obs_eff_sqrtload = obs_eff_load ** 0.5
 
@@ -222,10 +222,10 @@ def qng_approx_from_inputs(scenario_inputs_summary):
         scen_results = {'scenario': scenario,
                         'arr_rate': arr_rate,
                         'prob_blockedby_ldr_approx': obs_prob_blockedby_ldr,
-                        'condmeantime_blockedbyldr_approx': obs_condmeantime_blockedbyldr,
+                        'condmeantime_blockedby_ldr_approx': obs_condmeantime_blockedby_ldr,
                         'ldr_effmean_svctime_approx': ldr_effmean_svctime,
                         'prob_blockedby_pp_approx': ldr_pct_blockedby_pp,
-                        'condmeantime_blockedbypp_approx': ldr_meantime_blockedby_pp,
+                        'condmeantime_blockedby_pp_approx': ldr_meantime_blockedby_pp,
                         'obs_cv2_svctime': obs_cv2_svctime,
                         'ldr_cv2_svctime': ldr_cv2_svctime,
                         'pp_cv2_svctime': pp_cv2_svctime,
