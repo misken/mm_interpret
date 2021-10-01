@@ -169,7 +169,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
 
     # Create predictions
     if flavor not in flavors_nocv:
-        predictions = cross_val_predict(model, X, y)
+        predictions = cross_val_predict(model, X, y, cv=cv_iterator)
     else:
         predictions = model_final.predict(X)
 
@@ -227,6 +227,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                    'flavor': flavor,
                    'unit': unit,
                    'model': model_final,
+                   'cv': cv_iterator,
                    'coeffs_df': unscaled_coeffs_df,
                    'metrics_df': metrics_df,
                    'scaling': scaling_factors,
@@ -242,6 +243,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                    'flavor': flavor,
                    'unit': unit,
                    'model': model_final,
+                   'cv': cv_iterator,
                    'metrics_df': metrics_df,
                    'predictions': predictions,
                    'residuals': residuals,
