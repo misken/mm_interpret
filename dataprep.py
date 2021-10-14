@@ -139,10 +139,10 @@ def create_x_y(exp, sim_input_output_qnq_path, scenarios, output_path):
     y_obs_occ_mean = xy_df.loc[scenarios, 'occ_mean_mean_obs']
     y_obs_occ_p95 = xy_df.loc[scenarios, 'occ_mean_p95_obs']
 
-    y_prob_blockedby_pp = xy_df.loc[scenarios, 'prob_blockedby_pp_sim']
-    y_prob_blockedby_ldr = xy_df.loc[scenarios, 'prob_blockedby_ldr_sim']
-    y_condmeantime_blockedby_ldr = xy_df.loc[scenarios, 'condmeantime_blockedby_ldr_sim']
-    y_condmeantime_blockedby_pp = xy_df.loc[scenarios, 'condmeantime_blockedby_pp_sim']
+    y_prob_blockedby_pp = xy_df.loc[scenarios, 'prob_blockedby_pp']
+    y_prob_blockedby_ldr = xy_df.loc[scenarios, 'prob_blockedby_ldr']
+    y_condmeantime_blockedby_ldr = xy_df.loc[scenarios, 'condmeantime_blockedby_ldr']
+    y_condmeantime_blockedby_pp = xy_df.loc[scenarios, 'condmeantime_blockedby_pp']
 
     # Write dataframes to csv
     X_pp_noq.to_csv(Path(output_path, f'X_pp_noq_{exp}.csv'))

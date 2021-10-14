@@ -68,12 +68,12 @@ ldr_occ_p95_onlyq_lm_results = \
     crossval_summarize_mm('ldr_occ_p95_onlyq_lm', 'ldr', 'occ_p95',
                           X_ldr_occ_p95_onlyq, y_ldr_occ_p95, scale=False, flavor='lm')
 
-ldr_prob_blockedby_pp_onlyq_lm_results = \
-    crossval_summarize_mm('ldr_prob_blockedby_pp_onlyq_lm', 'ldr', 'pct_blockedby_pp',
+prob_blockedby_pp_onlyq_lm_results = \
+    crossval_summarize_mm('prob_blockedby_pp_onlyq_lm', 'ldr', 'pct_blockedby_pp',
                           X_ldr_prob_blockedby_pp_onlyq, y_prob_blockedby_pp, scale=False, flavor='lm')
 
-ldr_condmeantime_blockedby_pp_onlyq_lm_results = \
-    crossval_summarize_mm('ldr_condmeantime_blockedby_pp_onlyq_lm', 'ldr', 'condmeantime_blockedby_pp',
+condmeantime_blockedby_pp_onlyq_lm_results = \
+    crossval_summarize_mm('condmeantime_blockedby_pp_onlyq_lm', 'ldr', 'condmeantime_blockedby_pp',
                           X_ldr_condmeantime_blockedby_pp_onlyq, y_condmeantime_blockedby_pp, scale=False, flavor='lm')
 
 ## Linear regression (lm)
@@ -482,10 +482,11 @@ ldr_results = {'ldr_occ_mean_basicq_lm_results': ldr_occ_mean_basicq_lm_results,
                'condmeantime_blockedby_pp_basicq_nn_results': condmeantime_blockedby_pp_basicq_nn_results,
                'condmeantime_blockedby_pp_nn_results': condmeantime_blockedby_pp_q_nn_results,
                'condmeantime_blockedby_pp_noq_nn_results': condmeantime_blockedby_pp_noq_nn_results,
+               'condmeantime_blockedby_pp_q_mgc_results' : condmeantime_blockedby_pp_q_mgc_results,
                'ldr_occ_mean_onlyq_lm_results': ldr_occ_mean_onlyq_lm_results,
                'ldr_occ_p95_onlyq_lm_results': ldr_occ_p95_onlyq_lm_results,
-               'ldr_prob_blockedby_pp_onlyq_lm_results': ldr_prob_blockedby_pp_onlyq_lm_results,
-               'ldr_condmeantime_blockedby_pp_onlyq_lm_results': ldr_condmeantime_blockedby_pp_onlyq_lm_results
+               'prob_blockedby_pp_onlyq_lm_results': prob_blockedby_pp_onlyq_lm_results,
+               'condmeantime_blockedby_pp_onlyq_lm_results': condmeantime_blockedby_pp_onlyq_lm_results
                }
 
 # Pickle the results
