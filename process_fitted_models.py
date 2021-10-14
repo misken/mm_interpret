@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     if override_args:
         experiment = "exp11"
-        unit = "ldr"
+        unit = "obs"
         pkl_to_process = f"{unit}_results_exp11.pkl"
         output_path = "output"
         figures_path = f"output/figures/{experiment}"
