@@ -373,6 +373,7 @@ def fit_predict_mm(scenario, unit, measure, X_train, y_train, X_test, y_test, fl
 
     return results
 
+
 def prediction_scatter(actual, predicted, title, ax_anchor=0):
     """
     Create scatter plot of actual vs predicted with axline included

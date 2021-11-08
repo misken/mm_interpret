@@ -39,11 +39,11 @@ y_condmeantime_blockedby_pp = \
 
 # Queueing models
 ldr_occ_mean_q_load_results = \
-    crossval_summarize_mm('ldr_occ_mean_q_load', 'ldr', 'occ_mean', X_ldr_q, y_ldr_occ_mean, scale=False,
+    crossval_summarize_mm('ldr_occ_mean_q_effload', 'ldr', 'occ_mean', X_ldr_q, y_ldr_occ_mean, scale=False,
                           flavor='load', col_idx_arate=0, col_idx_meansvctime=18)
 
 ldr_occ_p95_q_sqrtload_results = \
-    crossval_summarize_mm('ldr_occ_p95_q_sqrtload', 'ldr', 'occ_p95', X_ldr_q, y_ldr_occ_p95, scale=False,
+    crossval_summarize_mm('ldr_occ_p95_q_sqrteffload', 'ldr', 'occ_p95', X_ldr_q, y_ldr_occ_p95, scale=False,
                           flavor='sqrtload', col_idx_arate=0, col_idx_meansvctime=18, load_pctile=0.95)
 
 prob_blockedby_pp_q_erlangc_results = \
