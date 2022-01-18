@@ -12,7 +12,7 @@ experiment = "exp11"
 data_path = Path("data")
 output_path = Path("output")
 figures_path = Path("output", "figures")
-raw_data_path = Path("data", "raw")
+siminout_data_path = Path("data", "siminout")
 pickle_filename = f"ldr_results_{experiment}.pkl"
 
 # X matrices
@@ -213,32 +213,32 @@ ldr_occ_p95_noq_poly_results = \
 prob_blockedby_pp_basicq_poly_results = \
     crossval_summarize_mm('prob_blockedby_pp_basicq_poly', 'ldr', 'pct_blockedby_pp',
                           X_ldr_basicq, y_prob_blockedby_pp,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 prob_blockedby_pp_q_poly_results = \
     crossval_summarize_mm('prob_blockedby_pp_q_poly', 'ldr', 'pct_blockedby_pp',
                           X_ldr_q, y_prob_blockedby_pp,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 prob_blockedby_pp_noq_poly_results = \
     crossval_summarize_mm('prob_blockedby_pp_noq_poly', 'ldr', 'pct_blockedby_pp',
                           X_ldr_noq, y_prob_blockedby_pp,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 condmeantime_blockedby_pp_basicq_poly_results = \
     crossval_summarize_mm('condmeantime_blockedby_pp_basicq_poly', 'ldr', 'condmeantime_blockedby_pp',
                           X_ldr_basicq, y_condmeantime_blockedby_pp,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 condmeantime_blockedby_pp_q_poly_results = \
     crossval_summarize_mm('condmeantime_blockedby_pp_q_poly', 'ldr', 'condmeantime_blockedby_pp',
                           X_ldr_q, y_condmeantime_blockedby_pp,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 condmeantime_blockedby_pp_noq_poly_results = \
     crossval_summarize_mm('condmeantime_blockedby_pp_noq_poly', 'ldr', 'condmeantime_blockedby_pp',
                           X_ldr_noq, y_condmeantime_blockedby_pp,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 # Random forest (rf)
 ldr_occ_mean_basicq_rf_results = \

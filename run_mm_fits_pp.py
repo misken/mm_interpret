@@ -25,7 +25,7 @@ y_pp_occ_p95 = pd.read_csv(Path(data_path, f'y_pp_occ_p95_{experiment}.csv'), in
 
 # Fit models
 
-## Linear regression (lm)
+# Linear regression (lm)
 pp_occ_mean_basicq_lm_results = \
     crossval_summarize_mm('pp_occ_mean_basicq_lm', 'pp', 'occ_mean', X_pp_basicq, y_pp_occ_mean, scale=False, flavor='lm')
 

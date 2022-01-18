@@ -326,32 +326,32 @@ condmeantime_blockedby_ldr_noq_lassocv_results = \
 prob_blockedby_ldr_basicq_poly_results = \
     crossval_summarize_mm('prob_blockedby_ldr_basicq_poly', 'obs', 'pct_blockedby_ldr',
                           X_obs_basicq, y_prob_blockedby_ldr,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 prob_blockedby_ldr_q_poly_results = \
     crossval_summarize_mm('prob_blockedby_ldr_q_poly', 'obs', 'pct_blockedby_ldr',
                           X_obs_q, y_prob_blockedby_ldr,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 prob_blockedby_ldr_noq_poly_results = \
     crossval_summarize_mm('prob_blockedby_ldr_noq_poly', 'obs', 'pct_blockedby_ldr',
                           X_obs_noq, y_prob_blockedby_ldr,
-                          scale=False, flavor='lm')
+                          scale=False, flavor='poly')
 
 condmeantime_blockedby_ldr_basicq_poly_results = \
     crossval_summarize_mm('condmeantime_blockedby_ldr_basicq_poly', 'obs', 'condmeantime_blockedby_ldr',
                           X_obs_basicq, y_condmeantime_blockedby_ldr,
-                                               scale=False, flavor='lm')
+                                               scale=False, flavor='poly')
 
 condmeantime_blockedby_ldr_q_poly_results = \
     crossval_summarize_mm('condmeantime_blockedby_ldr_q_poly', 'obs', 'condmeantime_blockedby_ldr',
                           X_obs_q, y_condmeantime_blockedby_ldr,
-                                               scale=False, flavor='lm')
+                                               scale=False, flavor='poly')
 
 condmeantime_blockedby_ldr_noq_poly_results = \
     crossval_summarize_mm('condmeantime_blockedby_ldr_noq_poly', 'obs', 'condmeantime_blockedby_ldr',
                           X_obs_noq, y_condmeantime_blockedby_ldr,
-                                               scale=False, flavor='lm')
+                                               scale=False, flavor='poly')
 
 # Random forest (rf)
 

@@ -19,8 +19,8 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import cross_validate, cross_val_score, cross_val_predict, KFold
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
 
-# explicitly require this experimental feature
-from sklearn.experimental import enable_hist_gradient_boosting  # noqa
+# explicitly require this experimental feature prior to v1.0 of sklearn
+# from sklearn.experimental import enable_hist_gradient_boosting  # noqa
 # now you can import normally from ensemble
 from sklearn.ensemble import HistGradientBoostingRegressor
 
@@ -34,7 +34,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
                           scale=False, fit_intercept=True, n_splits=5, kfold_shuffle=True, kfold_random_state=4,
                           return_train_score=True, return_estimator=True,
                           lasso_alpha=1.0, lasso_max_iter=1000, nn_max_iter=3000,
-                          rf_random_state=0, rf_criterion='mae', rf_min_samples_split=10,
+                          rf_random_state=0, rf_criterion='absolute_error', rf_min_samples_split=10,
                           col_idx_arate=None, col_idx_meansvctime=None, col_idx_numservers=None,
                           col_idx_cv2svctime=None, load_pctile=0.95):
     """
@@ -146,7 +146,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
         intercept = [estimator.named_steps[flavor_estimator[flavor]].intercept_ for estimator in scores['estimator']]
     # Trying to get feature names for poly
     if flavor == 'poly':
-        poly_features = [list(estimator.named_steps['polynomialfeatures'].get_feature_names(var_names))
+        poly_features = [list(estimator.named_steps['polynomialfeatures'].get_feature_names_out(var_names))
                          for estimator in scores['estimator']][0]
 
     # Extract alphas for lassocv
@@ -182,7 +182,7 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
     if flavor in flavors_w_coeffs:
         # If poly, need to construct var_names
         if flavor == 'poly':
-            poly_features = [list(estimator.named_steps['polynomialfeatures'].get_feature_names(var_names))
+            poly_features = [list(estimator.named_steps['polynomialfeatures'].get_feature_names_out(var_names))
                              for estimator in scores['estimator']][0]
 
             # Change '1' to 'intercept'
@@ -202,9 +202,6 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
             new_col_order.insert(0, n_cols - 1)
             coeffs_df = coeffs_df.iloc[:, new_col_order]
 
-        # Create coefficient plot
-        fig_coeffs = coeffs_by_fold(coeffs_df, col_wrap=5, sharey=False)
-
         # Scaling factors
         if scale:
             scaling_factors = np.array(
@@ -221,6 +218,9 @@ def crossval_summarize_mm(scenario, unit, measure, X, y, flavor='lm',
             unscaled_coeffs_df2 = coeffs_df.iloc[:, [0]]
             # Put them together with intercept as first column
             unscaled_coeffs_df = pd.concat([unscaled_coeffs_df2, unscaled_coeffs_df1], axis=1)
+
+        # Create coefficient plot
+        fig_coeffs = coeffs_by_fold(unscaled_coeffs_df, col_wrap=5, sharey=False)
 
         results = {'scenario': scenario,
                    'measure': measure,
@@ -256,7 +256,7 @@ def fit_predict_mm(scenario, unit, measure, X_train, y_train, X_test, y_test, fl
                    scale=False, fit_intercept=True, n_splits=5,
                    lassocv_shuffle=True, lassocv_random_state=4,
                    lasso_alpha=1.0, lasso_max_iter=1000, nn_max_iter=3000,
-                   rf_random_state=0, rf_criterion='mae', rf_min_samples_split=10):
+                   rf_random_state=0, rf_criterion='absolute_error', rf_min_samples_split=10):
 
     var_names = X_train.columns.to_list()
     flavors_w_coeffs = ['lm', 'lasso', 'lassocv', 'poly']
@@ -302,7 +302,7 @@ def fit_predict_mm(scenario, unit, measure, X_train, y_train, X_test, y_test, fl
 
     # Trying to get feature names for poly
     if flavor == 'poly':
-        poly_features = model.named_steps['polynomialfeatures'].get_feature_names(var_names)
+        poly_features = model.named_steps['polynomialfeatures'].get_feature_names_out(var_names)
 
     # Extract alpha for lassocv
     alpha = None

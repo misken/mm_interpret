@@ -292,7 +292,7 @@ def process_command_line():
 
 if __name__ == '__main__':
 
-    override_args = True
+    override_args = False
 
     if override_args:
         experiment = "exp11"

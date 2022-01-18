@@ -51,7 +51,7 @@ def process_command_line():
     Return a Namespace representing the argument list.
     """
 
-    # Create the parser
+    # Create the parsercorrect
     parser = argparse.ArgumentParser(prog='process_fitted_models',
                                      description='Create plots and summaries for fitted models')
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     if override_args:
         experiment = "exp11"
-        unit = "obs"
+        unit = "ldr"
         pkl_to_process = f"{unit}_results_exp11.pkl"
         output_path = "output"
         figures_path = f"output/figures/{experiment}"
