@@ -73,11 +73,11 @@ obs_occ_p95_onlyq_lm_results = \
     crossval_summarize_mm('obs_occ_p95_onlyq_lm', 'obs', 'occ_p95',
                           X_obs_occ_p95_onlyq, y_obs_occ_p95, scale=False, flavor='lm')
 
-obs_prob_blockedby_ldr_onlyq_lm_results = \
+prob_blockedby_ldr_onlyq_lm_results = \
     crossval_summarize_mm('prob_blockedby_ldr_onlyq_lm', 'obs', 'pct_blockedby_ldr',
                           X_obs_prob_blockedby_ldr_onlyq, y_prob_blockedby_ldr, scale=False, flavor='lm')
 
-obs_condmeantime_blockedby_ldr_onlyq_lm_results = \
+condmeantime_blockedby_ldr_onlyq_lm_results = \
     crossval_summarize_mm('condmeantime_blockedby_ldr_onlyq_lm', 'ldr', 'condmeantime_blockedby_ldr',
                           X_obs_condmeantime_blockedby_ldr_onlyq, y_condmeantime_blockedby_ldr, scale=False, flavor='lm')
 
@@ -522,7 +522,7 @@ obs_results = {'obs_occ_mean_basicq_lm_results': obs_occ_mean_basicq_lm_results,
                'condmeantime_blockedby_ldr_q_svr_results': condmeantime_blockedby_ldr_q_svr_results,
                'condmeantime_blockedby_ldr_noq_svr_results': condmeantime_blockedby_ldr_noq_svr_results,
                'condmeantime_blockedby_ldr_basicq_nn_results': condmeantime_blockedby_ldr_basicq_nn_results,
-               'condmeantime_blockedby_ldr_nn_results': condmeantime_blockedby_ldr_q_nn_results,
+               'condmeantime_blockedby_ldr_q_nn_results': condmeantime_blockedby_ldr_q_nn_results,
                'condmeantime_blockedby_ldr_noq_nn_results': condmeantime_blockedby_ldr_noq_nn_results,
                'obs_occ_mean_q_load_results': obs_occ_mean_q_load_results,
                'obs_occ_p95_q_sqrtload_results': obs_occ_p95_q_sqrtload_results,
@@ -532,8 +532,8 @@ obs_results = {'obs_occ_mean_basicq_lm_results': obs_occ_mean_basicq_lm_results,
                'condmeantime_blockedby_ldr_q_mgc_results': condmeantime_blockedby_ldr_q_mgc_results,
                'obs_occ_mean_onlyq_lm_results': obs_occ_mean_onlyq_lm_results,
                'obs_occ_p95_onlyq_lm_results': obs_occ_p95_onlyq_lm_results,
-               'obs_prob_blockedby_ldr_onlyq_lm_results': obs_prob_blockedby_ldr_onlyq_lm_results,
-               'obs_condmeantime_blockedby_ldr_onlyq_lm_results': obs_condmeantime_blockedby_ldr_onlyq_lm_results,
+               'prob_blockedby_ldr_onlyq_lm_results': prob_blockedby_ldr_onlyq_lm_results,
+               'condmeantime_blockedby_ldr_onlyq_lm_results': condmeantime_blockedby_ldr_onlyq_lm_results,
                }
 
 
