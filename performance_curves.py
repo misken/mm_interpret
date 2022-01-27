@@ -36,7 +36,7 @@ def make_x_scenarios(scenarios_df, exp, data_path):
 
     units = ['obs', 'ldr', 'pp']
 
-    # Read X matrices and extract list of column names. These include both base and derived inputs.
+    # Read X matrices just to extract list of column names. These include both base and derived inputs.
     X_ldr_q = pd.read_csv(Path(data_path, f'X_ldr_q_{exp}.csv'), index_col=0)
     X_ldr_q_cols = X_ldr_q.columns.tolist()
 
@@ -82,18 +82,18 @@ def make_x_scenarios(scenarios_df, exp, data_path):
     X_obs_noq = pd.read_csv(Path(data_path, f'X_obs_noq_{exp}.csv'), index_col=0)
     X_obs_noq_cols = X_obs_noq.columns.tolist()
 
-    X_obs_occmean_onlyq = pd.read_csv(Path(data_path, f'X_obs_occmean_onlyq_exp11.csv'), index_col=0)
+    X_obs_occmean_onlyq = pd.read_csv(Path(data_path, f'X_obs_occmean_onlyq_{exp}.csv'), index_col=0)
     X_obs_occmean_onlyq_cols = X_obs_occmean_onlyq.columns.tolist()
 
-    X_obs_occp95_onlyq = pd.read_csv(Path(data_path, f'X_obs_occp95_onlyq_exp11.csv'), index_col=0)
+    X_obs_occp95_onlyq = pd.read_csv(Path(data_path, f'X_obs_occp95_onlyq_{exp}.csv'), index_col=0)
     X_obs_occp95_onlyq_cols = X_obs_occp95_onlyq.columns.tolist()
 
-    X_obs_prob_blockedby_ldr_onlyq = pd.read_csv(Path(data_path, f'X_obs_prob_blockedby_ldr_onlyq_exp11.csv'),
+    X_obs_prob_blockedby_ldr_onlyq = pd.read_csv(Path(data_path, f'X_obs_prob_blockedby_ldr_onlyq_{exp}.csv'),
                                                  index_col=0)
     X_obs_prob_blockedby_ldr_onlyq_cols = X_obs_prob_blockedby_ldr_onlyq.columns.tolist()
 
     X_obs_condmeantime_blockedby_ldr_onlyq = \
-        pd.read_csv(Path(data_path, f'X_obs_condmeantime_blockedby_ldr_onlyq_exp11.csv'), index_col=0)
+        pd.read_csv(Path(data_path, f'X_obs_condmeantime_blockedby_ldr_onlyq_{exp}.csv'), index_col=0)
     X_obs_condmeantime_blockedby_ldr_onlyq_cols = X_obs_condmeantime_blockedby_ldr_onlyq.columns.tolist()
 
     # Compute overall mean los and cv2 for PP and LDR
@@ -123,7 +123,7 @@ def make_x_scenarios(scenarios_df, exp, data_path):
         lambda x: obnetwork.condmeantime_blockedby_pp_hat(
             x.arrival_rate, x.mean_los_pp, x.cap_pp, x.pp_cv2_svctime), axis=1)
 
-    # The next three derived inputs are all crated by obnetwork.obs_blockedby_ldr_hats()
+    # The next three derived inputs are all created by obnetwork.obs_blockedby_ldr_hats()
     scenarios_df['prob_blockedby_ldr_approx'] = \
         scenarios_df.apply(lambda x: obnetwork.obs_blockedby_ldr_hats(
             x.arrival_rate, x.c_sect_prob, x.mean_los_ldr, x.ldr_cv2_svctime, x.cap_ldr,
@@ -209,7 +209,7 @@ if __name__ == '__main__':
 
     if override_args:
         mm_experiment_suffix = "exp11"
-        perf_curve_scenarios_suffix = "exp11d"
+        perf_curve_scenarios_suffix = "exp11e"
         # Path to scenario yaml file created by scenario_grid.py
         path_scenario_grid_yaml = Path("mm_use", f"scenario_grid_{perf_curve_scenarios_suffix}.yaml")
         path_scenario_csv = Path("mm_use", f"X_performance_curves_{perf_curve_scenarios_suffix}.csv")
@@ -253,7 +253,8 @@ if __name__ == '__main__':
         features_models_ldr = [('q', 'lm'), ('basicq', 'lm'), ('noq', 'lm'),
                                ('q', 'lassocv'),
                                ('noq', 'poly'), ('basicq', 'poly'),
-                               ('noq', 'rf'), ('basicq', 'rf'), ('q', 'rf')]
+                               ('noq', 'rf'), ('basicq', 'rf'), ('q', 'rf'),
+                               ('noq', 'nn'), ('basicq', 'nn'), ('q', 'nn')]
 
         for f, m in features_models_ldr:
             scenarios_io_df[f'pred_ldr_occ_mean_{f}_{m}'] = \
@@ -270,20 +271,34 @@ if __name__ == '__main__':
 
         scenarios_io_df['pred_ldr_occ_mean_onlyq_lm'] = \
             ldr_results['ldr_occ_mean_onlyq_lm_results']['model'].predict(scenarios_dfs['X_ldr_occmean_onlyq'])
+
         scenarios_io_df['pred_ldr_occ_p95_onlyq_lm'] = \
             ldr_results['ldr_occ_p95_onlyq_lm_results']['model'].predict(scenarios_dfs['X_ldr_occp95_onlyq'])
+
         scenarios_io_df['pred_prob_blockedby_pp_onlyq_lm'] = \
             ldr_results['prob_blockedby_pp_onlyq_lm_results']['model'].predict(
                 scenarios_dfs['X_ldr_prob_blockedby_pp_onlyq'])
-        scenarios_io_df['pred_prob_blockedby_pp_onlyq_lm'] = \
+
+        scenarios_io_df['pred_prob_blockedby_pp_q_erlangc'] = \
+            ldr_results['prob_blockedby_pp_q_erlangc_results']['model'].predict(
+                scenarios_dfs['X_ldr_q'])
+
+        scenarios_io_df['pred_condmeantime_blockedby_pp_onlyq_lm'] = \
             ldr_results['condmeantime_blockedby_pp_onlyq_lm_results']['model'].predict(
                 scenarios_dfs['X_ldr_condmeantime_blockedby_pp_onlyq'])
+
+        scenarios_io_df['pred_condmeantime_blockedby_pp_q_mgs'] = \
+            ldr_results['condmeantime_blockedby_pp_q_mgc_results']['model'].predict(
+                scenarios_dfs['X_ldr_q'])
+
+        print('done with new style predictions for LDR')
 
         # PP predictions
         features_models_pp = [('basicq', 'lm'), ('noq', 'lm'),
                               ('basicq', 'lassocv'),
                               ('noq', 'poly'), ('basicq', 'poly'),
-                              ('noq', 'rf'), ('basicq', 'rf')]
+                              ('noq', 'rf'), ('basicq', 'rf'),
+                              ('noq', 'nn'), ('basicq', 'nn')]
 
         for f, m in features_models_pp:
             scenarios_io_df[f'pred_pp_occ_mean_{f}_{m}'] = \
@@ -304,7 +319,8 @@ if __name__ == '__main__':
         features_models_obs = [('q', 'lm'), ('basicq', 'lm'), ('noq', 'lm'),
                                ('q', 'lassocv'),
                                ('noq', 'poly'), ('basicq', 'poly'),
-                               ('noq', 'rf'), ('basicq', 'rf'), ('q', 'rf')]
+                               ('noq', 'rf'), ('basicq', 'rf'), ('q', 'rf'),
+                               ('noq', 'nn'), ('basicq', 'nn'), ('q', 'nn')]
 
         for f, m in features_models_obs:
             scenarios_io_df[f'pred_obs_occ_mean_{f}_{m}'] = \
@@ -321,14 +337,23 @@ if __name__ == '__main__':
 
         scenarios_io_df['pred_obs_occ_mean_onlyq_lm'] = \
             obs_results['obs_occ_mean_onlyq_lm_results']['model'].predict(scenarios_dfs['X_obs_occmean_onlyq'])
+
         scenarios_io_df['pred_obs_occ_p95_onlyq_lm'] = \
             obs_results['obs_occ_p95_onlyq_lm_results']['model'].predict(scenarios_dfs['X_obs_occp95_onlyq'])
+
         scenarios_io_df['pred_prob_blockedby_ldr_onlyq_lm'] = \
             obs_results['prob_blockedby_ldr_onlyq_lm_results']['model'].predict(
                 scenarios_dfs['X_obs_prob_blockedby_ldr_onlyq'])
-        scenarios_io_df['pred_prob_blockedby_ldr_onlyq_lm'] = \
+
+        scenarios_io_df['pred_prob_blockedby_ldr_q_erlangc'] = \
+            obs_results['prob_blockedby_ldr_q_erlangc_results']['model'].predict(
+                scenarios_dfs['X_obs_q'])
+
+        scenarios_io_df['pred_condmeantime_blockedby_ldr_onlyq_lm'] = \
             obs_results['condmeantime_blockedby_ldr_onlyq_lm_results']['model'].predict(
                 scenarios_dfs['X_obs_condmeantime_blockedby_ldr_onlyq'])
+
+        print('done with new style predictions for OBS')
 
         scenarios_io_df.to_csv(path_scenario_csv, index=True)
         print(f'scenarios_io_df written to {path_scenario_csv}')

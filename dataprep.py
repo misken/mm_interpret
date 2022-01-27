@@ -296,8 +296,8 @@ if __name__ == '__main__':
 
     if override_args:
         experiment = "exp11"
-        siminout_path = Path("data", "raw", "scenario_siminout_exp11.csv")
-        siminout_qng_path = Path("data", "raw", "scenario_siminout_qng_exp11.csv")
+        siminout_path = Path("data", "siminout", experiment, "scenario_siminout_exp11.csv")
+        siminout_qng_path = Path("data", "siminout", experiment, "scenario_siminout_qng_exp11.csv")
         output_data_path = Path("data")
         scenarios = slice(1, 135)
     else:
