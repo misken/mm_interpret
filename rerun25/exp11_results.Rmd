@@ -1,0 +1,371 @@
+---
+title: "exp11_results"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+```
+# exp11 - smaller scenario space
+
+The exp11 simulation mm experiment involved 135 scenarios:
+
+- 5 arrival rate volumes
+- 3 c-section probabilites
+- 3 ldr capacity targets
+- 3 pp capacity targets
+
+Metamodels were fit for OBS, LDR, and PP for mean occupancy, 95th percentile
+of occupancy, blocking probabilities and conditional mean blocking time.
+
+Five-fold cross validation was used to fit and assess models.
+
+Actual vs Predicted plots were created for all models. These were based
+one prediciton for each scenario associated with the fold in which that
+scenario was in the test dataset. So, plots represent performance on
+test data within the experimental design.
+
+
+## Load results
+
+```{r read_results}
+exp11_ldr_metrics <- read.csv("exp11/exp11_ldr_metrics.csv", stringsAsFactors = TRUE)
+exp11_pp_metrics <- read.csv("exp11/exp11_pp_metrics.csv", stringsAsFactors = TRUE)
+exp11_obs_metrics <- read.csv("exp11/exp11_obs_metrics.csv", stringsAsFactors = TRUE)
+
+# Combine
+exp11_metrics <- rbind(exp11_ldr_metrics, exp11_pp_metrics, exp11_obs_metrics)
+```
+
+## Recode factors
+
+```{r}
+exp11_metrics$model <- recode_factor(exp11_metrics$model, 
+                                      lassocv="lasso",
+                                      lm="lm",
+                                      poly="poly",
+                                      rf="rf",
+                                      nn="nnet",
+                                      svr="svr")
+
+
+exp11_metrics$measure_nice <- recode_factor(exp11_metrics$measure, 
+                                      occmean="mean occupancy",
+                                      occp95="95%ile occupancy",
+                                      probblocked="probability blocked",
+                                      condmeantimeblocked="conditional mean time blocked")
+
+exp11_metrics$unit_nice <- recode_factor(exp11_metrics$unit, 
+                                      obs="Observation",
+                                      ldr="LDR",
+                                      pp="Postpartum"
+                                      )
+```
+
+
+## Aggregated performance over folds
+
+To start, let's look at aggregated model performance over the 5 folds of the k-crossfold
+validation process. A few notes:
+
+* filtered out the pure queueing approximations for now (i.e. I'm only included fitted models)
+* for occupancy statistics and conditional mean wait time we use MAPE
+* for probability of blocking we use MAE (more relevant and easier to interpret)
+
+### Overall aggregation
+
+```{r aggregation}
+(exp11_metrics_agg <- exp11_metrics %>% 
+  group_by(unit, unit_nice, measure, measure_nice, qdata, model) %>% 
+  summarize(
+    train_mape = mean(train_mean_absolute_percentage_error),
+    test_mape = mean(test_mean_absolute_percentage_error),
+    train_mae = mean(train_mean_absolute_error),
+    test_mae = mean(test_mean_absolute_error)
+    
+  ))
+```
+
+
+### OBS aggregation
+
+```{r agg_fold_obs}
+(obs_occmean_mape <- exp11_metrics %>% 
+  filter(unit == 'obs', measure == 'occmean', qdata != 'onlyq', model != 'load') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    occmean_train_mape = mean(train_mean_absolute_percentage_error),
+    occmean_test_mape = mean(test_mean_absolute_percentage_error)
+  ))
+
+(obs_occp95_mape <- exp11_metrics %>% 
+  filter(unit == 'obs', measure == 'occp95', qdata != 'onlyq', model != 'sqrtload') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    occp95_train_mape = mean(train_mean_absolute_percentage_error),
+    occp95_test_mape = mean(test_mean_absolute_percentage_error)
+    
+  ))
+
+(obs_probblocked_mae <- exp11_metrics %>% 
+  filter(unit == 'obs', measure == 'probblocked', qdata != 'onlyq', model != 'erlangc') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    probblocked_train_mae = mean(train_mean_absolute_error),
+    probblocked_test_mae = mean(test_mean_absolute_error)
+    
+  ))
+
+(obs_condmeantimeblocked_mape <- exp11_metrics %>% 
+  filter(unit == 'obs', measure == 'condmeantimeblocked', qdata != 'onlyq', model != 'condmeanwaitldr') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    meantimeblocked_train_mape = mean(train_mean_absolute_percentage_error),
+    meantimeblocked_test_mape = mean(test_mean_absolute_percentage_error)
+    
+  ))
+```
+
+### LDR aggregation
+
+```{r agg_fold_ldr}
+(ldr_occmean_mape <- exp11_metrics %>% 
+  filter(unit == 'ldr', measure == 'occmean', qdata != 'onlyq', model != 'load') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    occmean_train_mape = mean(train_mean_absolute_percentage_error),
+    occmean_test_mape = mean(test_mean_absolute_percentage_error)
+  ))
+
+(ldr_occp95_mape <- exp11_metrics %>% 
+  filter(unit == 'ldr', measure == 'occp95', qdata != 'onlyq', model != 'sqrtload') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    occp95_train_mape = mean(train_mean_absolute_percentage_error),
+    occp95_test_mape = mean(test_mean_absolute_percentage_error)
+    
+  ))
+
+(ldr_probblocked_mae <- exp11_metrics %>% 
+  filter(unit == 'ldr', measure == 'probblocked', qdata != 'onlyq', model != 'erlangc') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    probblocked_train_mae = mean(train_mean_absolute_error),
+    probblocked_test_mae = mean(test_mean_absolute_error)
+    
+  ))
+
+(ldr_condmeantimeblocked_mape <- exp11_metrics %>% 
+  filter(unit == 'ldr', measure == 'condmeantimeblocked', qdata != 'onlyq', model != 'condmeanwaitldr') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    meantimeblocked_train_mape = mean(train_mean_absolute_percentage_error),
+    meantimeblocked_test_mape = mean(test_mean_absolute_percentage_error)
+    
+  ))
+```
+
+### PP aggregation
+
+```{r agg_fold_pp}
+(pp_occmean_mape <- exp11_metrics %>% 
+  filter(unit == 'pp', measure == 'occmean', qdata != 'onlyq', model != 'load') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    occmean_train_mape = mean(train_mean_absolute_percentage_error),
+    occmean_test_mape = mean(test_mean_absolute_percentage_error)
+  ))
+
+(pp_occp95_mape <- exp11_metrics %>% 
+  filter(unit == 'pp', measure == 'occp95', qdata != 'onlyq', model != 'sqrtload') %>% 
+  group_by(qdata, model) %>% 
+  summarize(
+    occp95_train_mape = mean(train_mean_absolute_percentage_error),
+    occp95_test_mape = mean(test_mean_absolute_percentage_error)
+    
+  ))
+
+```
+
+
+Let's try to design a plot for these stats.
+
+## Plots of performance on test data
+
+
+### Mean occupancy in LDR
+
+```{r ldr_occmean_mape}
+plt_ldr_occmean_mape <- exp11_metrics_agg %>% 
+  filter(unit == 'ldr',
+         qdata != 'onlyq', 
+         model %in% c('lasso', 'lm', 'poly', 'nnet', 'rf', 'svr'),
+         measure == 'occmean') %>% 
+  ggplot() +
+  geom_point(aes(x=model, y=test_mape, color=qdata, shape=qdata), 
+             size=4) +
+  labs(
+    title = "LDR - mean occupancy",
+    subtitle = "Exp 1 - small scenario grid (n=135)",
+    caption = NULL,
+    tag = NULL,
+    x = "Model type",
+    y = "Mean absolute % error",
+    colour = "Feature set",
+  ) + 
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+    scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + 
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+plt_ldr_occmean_mape
+ggsave('ldr_occmean_mape_bw.png')
+```
+
+```{r ldr_plots}
+which_unit <- 'ldr'
+which_subtitle <- 'Exp 1 - small scenario grid (n=135)'
+
+plot_height <- 4
+plot_width <- 6
+
+plt_ldr_occmean_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                       measure = 'occmean', error = 'mape',
+                                       title = 'LDR - mean occupancy',
+                                       subtitle = which_subtitle)
+ggsave(plt_ldr_occmean_mape, filename = 'exp11_ldr_occmean_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_ldr_occp95_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                      measure = 'occp95', error = 'mape',
+                                      title = 'LDR - 95%ile occupancy',
+                                      subtitle = which_subtitle)
+ggsave(plt_ldr_occp95_mape, filename = 'exp11_ldr_occp95_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_ldr_probblocked_mae <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                       measure = 'probblocked', error = 'mae',
+                                       title = 'LDR - probability blocked',
+                                       subtitle = which_subtitle)
+ggsave(plt_ldr_probblocked_mae, filename = 'exp11_ldr_probblocked_mae.png',
+       height = plot_height, width = plot_width)
+
+plt_ldr_condmeanblockedtime_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                      measure = 'condmeanblockedtime', error = 'mape',
+                                      title = 'LDR - conditional mean time blocked',
+                                      subtitle = which_subtitle)
+ggsave(plt_ldr_condmeanblockedtime_mape, filename = 'exp11_ldr_condmeanblockedtime_mape.png',
+       height = plot_height, width = plot_width)
+```
+
+### Faceted LDR
+
+
+
+```{r ldr_faceted, fig.align="center", echo = FALSE, fig.height = 9, fig.width = 6}
+exp11_metrics_agg %>% 
+  filter(unit == 'ldr', qdata != 'onlyq', 
+         model %in% c('lasso', 'lm', 'poly', 'nnet', 'rf', 'svr'),
+         measure != 'probblocked') %>% 
+  ggplot() +
+  geom_point(aes(x=model, y=test_mape, color=qdata, shape=qdata), 
+             size=4) + facet_wrap(~measure_nice, ncol=1, scales = 'free') +
+  labs(
+    title = "Percentage errors by model type",
+    subtitle = "Exp 1 - small scenario grid",
+    caption = NULL,
+    tag = NULL,
+    x = "Model type",
+    y = "Mean absolute % error error",
+    colour = "Feature set",
+  ) +
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+      scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+
+```
+
+
+
+## PP
+
+```{r pp_plots}
+which_unit <- 'pp'
+which_subtitle <- 'Exp 1 - small scenario grid (n=135)'
+
+plot_height <- 4
+plot_width <- 6
+
+plt_pp_occmean_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                       measure = 'occmean', error = 'mape',
+                                       title = 'PP - mean occupancy',
+                                       subtitle = which_subtitle)
+ggsave(plt_pp_occmean_mape, filename = 'exp11_pp_occmean_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_pp_occp95_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                      measure = 'occp95', error = 'mape',
+                                      title = 'PP - 95%ile occupancy',
+                                      subtitle = which_subtitle)
+ggsave(plt_pp_occp95_mape, filename = 'exp11_pp_occp95_mape.png',
+       height = plot_height, width = plot_width)
+
+
+```
+
+## OBS
+
+```{r ldr_plots}
+which_unit <- 'obs'
+which_subtitle <- 'Exp 1 - small scenario grid (n=135)'
+
+plot_height <- 4
+plot_width <- 6
+
+plt_obs_occmean_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                       measure = 'occmean', error = 'mape',
+                                       title = 'OBS - mean occupancy',
+                                       subtitle = which_subtitle)
+ggsave(plt_obs_occmean_mape, filename = 'exp11_obs_occmean_mape.png',
+       height = plot_height, width = plot_width)
+
+obs_occ95_note <- 'Note: Poly model with advanced queueing terms produces non-sensical results due to overfitting.'
+plt_obs_occp95_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                      measure = 'occp95', error = 'mape',
+                                      title = 'OBS - 95%ile occupancy',
+                                      subtitle = which_subtitle, note = NULL,
+                                     ylim_ub = 0.15)
+ggsave(plt_obs_occp95_mape, filename = 'exp11_obs_occp95_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_obs_probblocked_mae <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                       measure = 'probblocked', error = 'mae',
+                                       title = 'OBS - probability blocked',
+                                       subtitle = which_subtitle)
+ggsave(plt_obs_probblocked_mae, filename = 'exp11_obs_probblocked_mae.png',
+       height = plot_height, width = plot_width)
+
+plt_obs_condmeanblockedtime_mape <- mm_error_plot(exp11_metrics_agg, unit = which_unit,
+                                      measure = 'condmeanblockedtime', error = 'mape',
+                                      title = 'OBS - conditional mean time blocked',
+                                      subtitle = which_subtitle)
+ggsave(plt_obs_condmeanblockedtime_mape, filename = 'exp11_obs_condmeanblockedtime_mape.png',
+       height = plot_height, width = plot_width)
+```

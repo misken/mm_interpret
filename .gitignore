@@ -51,3 +51,4 @@ MANIFEST
 
 # Sphinx documentation
 docs/_build/
+.Rproj.user

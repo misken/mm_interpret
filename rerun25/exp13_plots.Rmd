@@ -1,0 +1,464 @@
+---
+title: "exp13_plots"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+```
+
+```{r}
+source("./make_plots.R")
+```
+
+# exp13 - larger scenario space
+
+The Exp13 simulation mm experiment involved 3240 scenarios:
+
+- 5 arrival rate volumes
+- 3 mean OBS LOS values
+- 2 mean PP LOS values for no c-section
+- 2 mean PP LOS values for with c-section
+- 3 c-section probabilites
+- 2 obs capacity targets
+- 3 ldr capacity targets
+- 3 pp capacity targets
+
+Metamodels were fit for OBS, LDR, and PP for mean occupancy, 95th percentile
+of occupancy, blocking probabilities and conditional mean blocking time.
+
+Five-fold cross validation was used to fit and assess models.
+
+Actual vs Predicted plots were created for all models. These were based
+one prediciton for each scenario associated with the fold in which that
+scenario was in the test dataset. So, plots represent performance on
+test data within the experimental design.
+
+
+## Load results
+
+```{r read_metrics_results}
+exp13_ldr_metrics <- read.csv("exp13/exp13_ldr_metrics.csv", stringsAsFactors = TRUE)
+exp13_pp_metrics <- read.csv("exp13/exp13_pp_metrics.csv", stringsAsFactors = TRUE)
+exp13_obs_metrics <- read.csv("exp13/exp13_obs_metrics.csv", stringsAsFactors = TRUE)
+
+# Combine
+exp13_metrics <- rbind(exp13_ldr_metrics, exp13_pp_metrics, exp13_obs_metrics)
+
+rm(exp13_ldr_metrics)
+rm(exp13_pp_metrics)
+rm(exp13_obs_metrics)
+```
+
+```{r read_predictions_results}
+exp13_ldr_predictions <- read.csv("exp13/exp13_ldr_predictions.csv", stringsAsFactors = TRUE)
+exp13_pp_predictions <- read.csv("exp13/exp13_pp_predictions.csv", stringsAsFactors = TRUE)
+exp13_obs_predictions <- read.csv("exp13/exp13_obs_predictions.csv", stringsAsFactors = TRUE)
+
+# Combine
+exp13_predictions <- rbind(exp13_ldr_predictions, exp13_pp_predictions, exp13_obs_predictions)
+
+rm(exp13_ldr_predictions)
+rm(exp13_pp_predictions)
+rm(exp13_obs_predictions)
+```
+
+## Recode factors
+
+```{r}
+exp13_metrics$model <- recode_factor(exp13_metrics$model, 
+                                      lassocv="lasso",
+                                      lm="lm",
+                                      poly="poly",
+                                      rf="rf",
+                                      nn="nnet",
+                                      svr="svr")
+
+
+exp13_metrics$measure_nice <- recode_factor(exp13_metrics$measure, 
+                                      occmean="mean occupancy",
+                                      occp95="95%ile occupancy",
+                                      probblocked="probability blocked",
+                                      condmeantimeblocked="conditional mean time blocked")
+
+exp13_metrics$unit_nice <- recode_factor(exp13_metrics$unit, 
+                                      obs="Observation",
+                                      ldr="LDR",
+                                      pp="Postpartum"
+                                      )
+
+exp13_metrics$qdata_nice <- recode_factor(exp13_metrics$qdata, 
+                                      noq="None",
+                                      basicq="Basic",
+                                      q="Advanced"
+                                      )
+
+```
+
+```{r}
+exp13_predictions$model <- recode_factor(exp13_predictions$model, 
+                                      lassocv="lasso",
+                                      lm="lm",
+                                      poly="poly",
+                                      rf="rf",
+                                      nn="nnet",
+                                      svr="svr")
+
+
+exp13_predictions$measure_nice <- recode_factor(exp13_predictions$measure, 
+                                      occmean="mean occupancy",
+                                      occp95="95%ile occupancy",
+                                      probblocked="probability blocked",
+                                      condmeantimeblocked="conditional mean time blocked")
+
+exp13_predictions$unit_nice <- recode_factor(exp13_predictions$unit, 
+                                      obs="Observation",
+                                      ldr="LDR",
+                                      pp="Postpartum"
+                                      )
+
+exp13_predictions$qdata_nice <- recode_factor(exp13_predictions$qdata, 
+                                      noq="None",
+                                      basicq="Basic",
+                                      q="Advanced"
+                                      )
+```
+
+
+## Aggregated performance over folds
+
+To start, let's look at aggregated model performance over the 5 folds of the k-crossfold
+validation process. A few notes:
+
+* filtered out the pure queueing approximations for now (i.e. I'm only included fitted models)
+* for occupancy statistics and conditional mean wait time we use MAPE
+* for probability of blocking we use MAE (more relevant and easier to interpret)
+
+### Overall aggregation
+
+```{r aggregation}
+(exp13_metrics_agg <- exp13_metrics %>% 
+  group_by(unit, unit_nice, measure, measure_nice, qdata, model) %>% 
+  summarize(
+    train_mape = mean(train_mean_absolute_percentage_error),
+    test_mape = mean(test_mean_absolute_percentage_error),
+    train_mae = mean(train_mean_absolute_error),
+    test_mae = mean(test_mean_absolute_error)
+    
+  ))
+```
+
+
+
+
+## Plots of performance on test data
+
+
+### LDR
+
+```{r ldr_plots}
+which_unit <- 'ldr'
+which_subtitle <- 'Exp 2 - large scenario grid (n=3240)'
+
+plot_height <- 4
+plot_width <- 6
+
+plt_ldr_occmean_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                       measure = 'occmean', error = 'mape',
+                                       title = 'LDR - mean occupancy',
+                                       subtitle = which_subtitle)
+ggsave(plt_ldr_occmean_mape, filename = 'exp13/summary_plots/exp13_ldr_occmean_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_ldr_occp95_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                      measure = 'occp95', error = 'mape',
+                                      title = 'LDR - 95%ile occupancy',
+                                      subtitle = which_subtitle)
+ggsave(plt_ldr_occp95_mape, filename = 'exp13/summary_plots/exp13_ldr_occp95_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_ldr_probblocked_mae <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                       measure = 'probblocked', error = 'mae',
+                                       title = 'LDR - probability blocked',
+                                       subtitle = which_subtitle)
+ggsave(plt_ldr_probblocked_mae, filename = 'exp13/summary_plots/exp13_ldr_probblocked_mae.png',
+       height = plot_height, width = plot_width)
+
+plt_ldr_condmeantimeblocked_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                      measure = 'condmeantimeblocked', error = 'mape',
+                                      title = 'LDR - conditional mean time blocked',
+                                      subtitle = which_subtitle)
+ggsave(plt_ldr_condmeantimeblocked_mape, filename = 'exp13/summary_plots/exp13_ldr_condmeantimeblocked_mape.png',
+       height = plot_height, width = plot_width)
+```
+
+## PP
+
+```{r pp_plots}
+which_unit <- 'pp'
+which_subtitle <- 'Exp 2 - large scenario grid (n=3240)'
+
+plot_height <- 4
+plot_width <- 6
+
+plt_pp_occmean_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                       measure = 'occmean', error = 'mape',
+                                       title = 'PP - mean occupancy',
+                                       subtitle = which_subtitle)
+ggsave(plt_pp_occmean_mape, filename = 'exp13/summary_plots/exp13_pp_occmean_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_pp_occp95_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                      measure = 'occp95', error = 'mape',
+                                      title = 'PP - 95%ile occupancy',
+                                      subtitle = which_subtitle)
+ggsave(plt_pp_occp95_mape, filename = 'exp13/summary_plots/exp13_pp_occp95_mape.png',
+       height = plot_height, width = plot_width)
+
+
+```
+
+## OBS
+
+```{r ldr_plots}
+which_unit <- 'obs'
+which_subtitle <- 'Exp 2 - large scenario grid (n=3240)'
+
+plot_height <- 4
+plot_width <- 6
+
+plt_obs_occmean_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                       measure = 'occmean', error = 'mape',
+                                       title = 'OBS - mean occupancy',
+                                       subtitle = which_subtitle)
+ggsave(plt_obs_occmean_mape, filename = 'exp13/summary_plots/exp13_obs_occmean_mape.png',
+       height = plot_height, width = plot_width)
+
+obs_occ95_note <- 'Note: Poly model with advanced queueing terms produces non-sensical results due to overfitting.'
+plt_obs_occp95_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                      measure = 'occp95', error = 'mape',
+                                      title = 'OBS - 95%ile occupancy',
+                                      subtitle = which_subtitle, note = NULL,
+                                     ylim_ub = 0.15)
+ggsave(plt_obs_occp95_mape, filename = 'exp13/summary_plots/exp13_obs_occp95_mape.png',
+       height = plot_height, width = plot_width)
+
+plt_obs_probblocked_mae <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                       measure = 'probblocked', error = 'mae',
+                                       title = 'OBS - probability blocked',
+                                       subtitle = which_subtitle)
+ggsave(plt_obs_probblocked_mae, filename = 'exp13/summary_plots/exp13_obs_probblocked_mae.png',
+       height = plot_height, width = plot_width)
+
+plt_obs_condmeantimeblocked_mape <- mm_error_plot(exp13_metrics_agg, unit = which_unit,
+                                      measure = 'condmeantimeblocked', error = 'mape',
+                                      title = 'OBS - conditional mean time blocked',
+                                      subtitle = which_subtitle)
+ggsave(plt_obs_condmeantimeblocked_mape, filename = 'exp13/summary_plots/exp13_obs_condmeantimeblocked_mape.png',
+       height = plot_height, width = plot_width)
+```
+
+## Predicted vs Actual plots
+
+```{r ldr_occmean_pred_vs_act}
+plt_ldr_occmean_pvsa <- exp13_predictions %>% 
+  filter(unit == 'ldr',
+         qdata != 'onlyq', 
+         model %in% c('lasso', 'poly', 'nnet', 'rf'),
+         measure == 'occmean') %>% 
+  ggplot() +
+  geom_point(aes(x=actual, y=prediction, color=qdata, shape=qdata), 
+             size=4) + geom_abline(intercept = 0, slope = 1) +
+  facet_grid(model~qdata_nice) +
+  labs(
+    title = "LDR - mean occupancy",
+    subtitle = "Exp2 - Predicted vs Actual",
+    caption = NULL,
+    tag = NULL,
+    x = "Actual value",
+    y = "Predicted value",
+    colour = "Feature set",
+  ) + 
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+    scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + 
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+plt_ldr_occmean_pvsa
+ggsave('exp13/plt_ldr_occmean_pvsa.png')
+```
+
+```{r ldr_probblocked_pred_vs_act}
+plt_ldr_probblocked_pvsa <- exp13_predictions %>% 
+  filter(unit == 'ldr',
+         qdata != 'onlyq', 
+         model %in% c('lasso', 'poly', 'nnet', 'rf'),
+         measure == 'probblocked') %>% 
+  ggplot() +
+  geom_point(aes(x=actual, y=prediction, color=qdata, shape=qdata), 
+             size=4) + geom_abline(intercept = 0, slope = 1) +
+  facet_grid(model~qdata_nice) +
+  labs(
+    title = "LDR - probability blocked",
+    subtitle = "Exp2 - Predicted vs Actual",
+    caption = NULL,
+    tag = NULL,
+    x = "Actual value",
+    y = "Predicted value",
+    colour = "Feature set",
+  ) + 
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+    scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + 
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+plt_ldr_probblocked_pvsa
+ggsave('exp13/plt_ldr_probblocked_pvsa.png')
+```
+
+```{r ldr_condmeantimeblocked_pred_vs_act}
+plt_ldr_condmeantimeblocked_pvsa <- exp13_predictions %>% 
+  filter(unit == 'ldr',
+         qdata != 'onlyq', 
+         model %in% c('lasso', 'poly', 'nnet', 'rf'),
+         measure == 'condmeantimeblocked') %>% 
+  ggplot() +
+  geom_point(aes(x=actual, y=prediction, color=qdata, shape=qdata), 
+             size=4) + geom_abline(intercept = 0, slope = 1) +
+  facet_grid(model~qdata_nice) +
+  labs(
+    title = "LDR - conditional mean time blocked",
+    subtitle = "Exp2 - Predicted vs Actual",
+    caption = NULL,
+    tag = NULL,
+    x = "Actual value",
+    y = "Predicted value",
+    colour = "Feature set",
+  ) + 
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+    scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + 
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+plt_ldr_condmeantimeblocked_pvsa
+ggsave('plt_ldr_condmeantimeblocked_pvsa.png')
+```
+
+```{r obs_probblocked_pred_vs_act}
+plt_obs_probblocked_pvsa <- exp13_predictions %>% 
+  filter(unit == 'obs',
+         qdata != 'onlyq', 
+         model %in% c('lasso', 'poly', 'nnet', 'rf'),
+         measure == 'probblocked') %>% 
+  ggplot() +
+  geom_point(aes(x=actual, y=prediction, color=qdata, shape=qdata), 
+             size=4) + geom_abline(intercept = 0, slope = 1) +
+  facet_grid(model~qdata_nice) +
+  labs(
+    title = "OBS - probability blocked",
+    subtitle = "Exp2 - Predicted vs Actual",
+    caption = NULL,
+    tag = NULL,
+    x = "Actual value",
+    y = "Predicted value",
+    colour = "Feature set",
+  ) + 
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+    scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + 
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+plt_obs_probblocked_pvsa
+ggsave('exp13/plt_obs_probblocked_pvsa.png')
+```
+```{r ldr_occp95_pred_vs_act}
+plt_ldr_occp95_pvsa <- exp13_predictions %>% 
+  filter(unit == 'ldr',
+         qdata != 'onlyq', 
+         model %in% c('lasso', 'lm', 'poly', 'nnet', 'rf', 'svr'),
+         measure == 'occp95') %>% 
+  ggplot() +
+  geom_point(aes(x=actual, y=prediction, color=qdata, shape=qdata), 
+             size=4) + geom_abline(intercept = 0, slope = 1) +
+  facet_grid(model~qdata_nice) +
+  labs(
+    title = "LDR - 95%ile occupancy",
+    subtitle = "Exp2 - Predicted vs Actual",
+    caption = NULL,
+    tag = NULL,
+    x = "Actual value",
+    y = "Predicted value",
+    colour = "Feature set",
+  ) + 
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+    scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + 
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+plt_ldr_occp95_pvsa
+ggsave('exp13/plt_ldr_occp95_pvsa.png')
+```
+
+```{r pp_occp95_pred_vs_act}
+plt_pp_occp95_pvsa <- exp13_predictions %>% 
+  filter(unit == 'pp',
+         qdata != 'onlyq', 
+         model %in% c('lasso', 'lm', 'poly', 'nnet', 'rf', 'svr'),
+         measure == 'occp95') %>% 
+  ggplot() +
+  geom_point(aes(x=actual, y=prediction, color=qdata, shape=qdata), 
+             size=4) + geom_abline(intercept = 0, slope = 1) +
+  facet_grid(model~qdata_nice) +
+  labs(
+    title = "PP - 95%ile occupancy",
+    subtitle = "Exp2 - Predicted vs Actual",
+    caption = NULL,
+    tag = NULL,
+    x = "Actual value",
+    y = "Predicted value",
+    colour = "Feature set",
+  ) + 
+    scale_colour_discrete(name  ="Queueing features",
+                            breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) +
+    scale_shape_discrete(name  ="Queueing features",
+                           breaks=c("noq", "basicq", "q"),
+                            labels=c("None", "Basic", "Advanced")) + 
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+plt_pp_occp95_pvsa
+ggsave('exp13/plt_pp_occp95_pvsa.png')
+```
